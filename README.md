@@ -118,7 +118,7 @@ Watch/Rating History:
 
 ### User Storie 7
 
-![User Storie 7](Mockups/US7/Fliter Movie.png)
+![User Storie 7](Mockups/US7/Filter Movie.png)
 
 ### User Storie 8
 
