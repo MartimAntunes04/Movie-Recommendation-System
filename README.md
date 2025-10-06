@@ -136,6 +136,10 @@ Watch/Rating History:
 
 ![User Storie 11](Mockups/US11/History.png)
 
+### User Storie 12
+
+![User Storie 12](Mockups/US12/My List.png)
+
 ---
 
 ### User Stories
@@ -161,6 +165,8 @@ Watch/Rating History:
 - User story 10 (#15)
 
 - User story 11 (#16)
+
+- User story 12 (#17)
 
 ---
 
