@@ -83,14 +83,84 @@ Watch/Rating History:
 
 ### Use Case Diagram
 
+![Use case diagram](diagrams_models/UseCaseDiagram.png)
+
 
 ---
 
 ### Mockups
 
+### User Storie 1
+
+![User Storie 1](Mockups/US1/Login.png)
+
+### User Storie 2
+
+![User Storie 2](Mockups/US2/Sign Up.png)
+
+### User Storie 3
+
+![User Storie 3](Mockups/US3/Profile.png)
+
+![User Storie 3](Mockups/US3/Edit Profile.png)
+
+### User Storie 4
+
+![User Storie 4](Mockups/US4/Browse Movie Catalog.png)
+
+### User Storie 5
+
+![User Storie 5](Mockups/US5/Movie Details Page.png)
+
+### User Storie 6
+
+![User Storie 6](Mockups/US6/Search Movie.png)
+
+### User Storie 7
+
+![User Storie 7](Mockups/US7/Fliter Movie.png)
+
+### User Storie 8
+
+![User Storie 8](Mockups/US8/Rate Movie.png)
+
+### User Storie 9
+
+![User Storie 9](Mockups/US9/Personalized Recommendations.png)
+
+### User Storie 10
+
+![User Storie 10](Mockups/US10/Popular Movies.png)
+
+### User Storie 11
+
+![User Storie 11](Mockups/US11/History.png)
+
 ---
 
 ### User Stories
+
+- User story 1 (#6)
+
+- User story 2 (#7)
+
+- User story 3 (#8)
+
+- User story 4 (#9)
+
+- User story 5 (#10)
+
+- User story 6 (#11)
+
+- User story 7 (#12)
+
+- User story 8 (#13)
+
+- User story 9 (#14)
+
+- User story 10 (#15)
+
+- User story 11 (#16)
 
 ---
 
