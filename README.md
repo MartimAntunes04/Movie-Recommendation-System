@@ -1,5 +1,15 @@
 # TP ADS
 
+## Contents
+
+- [Team](#team)
+- [Vision and Scope](#vision-and-scope)
+- [Requirements](#requirements)
+    - [Use case diagram](#use-case-diagram)
+    - [Mockups](#mockups)
+    - [User Stories](#user-stories)
+
+
 ## Team
  
 - Martim Antunes - 2025191528 - uc2025191528@student.uc.pt
@@ -84,6 +94,3 @@ Watch/Rating History:
 
 ---
 
-## Architecture and Design
-
-#### Domain Model
