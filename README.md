@@ -77,6 +77,14 @@ Watch/Rating History:
 
 - Keep track of movies rated or watched by the user.
 
+My List (Watchlist)
+
+- Allow users to save movies to a personal watchlist for watching later.
+
+- Display saved movies in a dedicated “My List” page.
+
+- Enable adding/removing movies via a heart icon on movie details.
+
 ---
 
 ## Requirements
