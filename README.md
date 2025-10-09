@@ -16,7 +16,7 @@
 - Bernardo Pedro - 2021231014 - uc2021231014@student.uc.pt
 - Daniel Antunes - 2025192233 - daniel.malho.antunes@gmail.com
 - Franscisco Tavares - 2020211848 - franciscomcmt@gmail.com
-- Gonçalo Gaio - 
+- Gonçalo Gaio - 2022224905 - goncalogaio12@gmail.com
 
 ---
 
