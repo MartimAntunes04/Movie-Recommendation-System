@@ -16,7 +16,7 @@
 - Bernardo Pedro - 2021231014 - uc2021231014@student.uc.pt
 - Daniel Antunes - 2025192233 - daniel.malho.antunes@gmail.com
 - Franscisco Tavares - 2020211848 - franciscomcmt@gmail.com
-- Gonçalo Gaio - 
+- Gonçalo Gaio - 2022224905 - goncalogaio12@gmail.com
 
 ---
 
@@ -26,20 +26,20 @@
 
 ##### Project background
 
-Modern streaming platforms and online movie databases offer massive collections of films, but users often struggle to discover content that matches their personal preferences.
-Without intelligent recommendation systems, users spend excessive time browsing through irrelevant titles.
-This project aims to create a movie recommendation system that helps users quickly find films aligned with their interests by combining traditional development methods with AI-assisted workflows and DevOps practices.
+Modern streaming platforms and online movie databases offer massive collections of films, but users often struggle to discover content that matches their personal preferences. Without intelligent recommendation systems, users spend excessive time browsing through irrelevant titles. This project aims to create a movie recommendation system that helps users quickly find films aligned with their interests by combining traditional development methods with AI-assisted workflows.
 
 ##### Users
 
-- Anyone interested in films
-- Movie Enthusiasts
+- General users interested in discovering and organizing movies to watch;
+- Movie enthusiasts who enjoy rating and reviewing films;
+- Casual viewers who want quick, personalized recommendations;
+
 
 ---
 
 ##### Vision statement
 
-The goal of this project is to develop an intelligent and user-friendly Movie Recommendation System that helps people discover films tailored to their personal tastes and preferences.
+The goal of this project is to build an intuitive and intelligent Movie Recommendation System that allows users to easily discover new movies, rate and receive personalized suggestions.
 
 ##### List of features
 
@@ -76,6 +76,14 @@ Recommendation Engine:
 Watch/Rating History:
 
 - Keep track of movies rated or watched by the user.
+
+My List (Watchlist)
+
+- Allow users to save movies to a personal watchlist for watching later.
+
+- Display saved movies in a dedicated “My List” page.
+
+- Enable adding/removing movies via a heart icon on movie details.
 
 ---
 
@@ -136,6 +144,10 @@ Watch/Rating History:
 
 ![User Storie 11](Mockups/US11/History.png)
 
+### User Storie 12
+
+![User Storie 12](Mockups/US12/My List.png)
+
 ---
 
 ### User Stories
@@ -161,6 +173,8 @@ Watch/Rating History:
 - User story 10 (#15)
 
 - User story 11 (#16)
+
+- User story 12 (#17)
 
 ---
 
