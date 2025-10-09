@@ -26,20 +26,20 @@
 
 ##### Project background
 
-Modern streaming platforms and online movie databases offer massive collections of films, but users often struggle to discover content that matches their personal preferences.
-Without intelligent recommendation systems, users spend excessive time browsing through irrelevant titles.
-This project aims to create a movie recommendation system that helps users quickly find films aligned with their interests by combining traditional development methods with AI-assisted workflows and DevOps practices.
+Modern streaming platforms and online movie databases offer massive collections of films, but users often struggle to discover content that matches their personal preferences. Without intelligent recommendation systems, users spend excessive time browsing through irrelevant titles. This project aims to create a movie recommendation system that helps users quickly find films aligned with their interests by combining traditional development methods with AI-assisted workflows.
 
 ##### Users
 
-- Anyone interested in films
-- Movie Enthusiasts
+- General users interested in discovering and organizing movies to watch;
+- Movie enthusiasts who enjoy rating and reviewing films;
+- Casual viewers who want quick, personalized recommendations;
+
 
 ---
 
 ##### Vision statement
 
-The goal of this project is to develop an intelligent and user-friendly Movie Recommendation System that helps people discover films tailored to their personal tastes and preferences.
+The goal of this project is to build an intuitive and intelligent Movie Recommendation System that allows users to easily discover new movies, rate and receive personalized suggestions.
 
 ##### List of features
 
