@@ -1,0 +1,37 @@
+package pt.uc.movierecommendation.movierecommendationsystem.Controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pt.uc.movierecommendation.movierecommendationsystem.Model.LoginRequest;
+import pt.uc.movierecommendation.movierecommendationsystem.Model.SignUpRequest;
+import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;
+
+import java.util.Map;
+
+@RestController
+public class AuthController {
+
+    @Autowired
+    private AuthService authService;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        String token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "message", "Invalid email or password"));
+        }
+
+        return ResponseEntity.ok(Map.of("success", true, "token", token));
+    }
+
+    @PostMapping("/signup")
+    public boolean signup (@RequestBody SignUpRequest signUpRequest) {
+        return authService.signup(signUpRequest);
+    }
+
+
+}
