@@ -7,13 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName,setLastName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [backendError, setBackendError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
 
   const validatePasswords = (pass: string, confirmPass: string) => {
     if (confirmPass && pass !== confirmPass) {
@@ -35,15 +45,57 @@ export default function Register() {
     validatePasswords(password, value);
   };
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+  const isFormInvalid = !!passwordError || !email || !password || !username || !firstName || !lastName || !confirmPassword;
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>){
     event.preventDefault();
     
     if (!validatePasswords(password, confirmPassword)) {
       return;
     }
 
-    // Aqui você pode adicionar a lógica de registro
-    console.log("Formulário válido, processando registro...");
+     try {
+    const response = await fetch("http://localhost:8080/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        firstName,
+        lastName,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+
+      setBackendError(""); // limpar erros
+      setSuccessMessage(data.message || "Conta criada com sucesso!");
+
+
+      setEmail(""); 
+      setPassword(""); 
+      setConfirmPassword("");
+      setUsername(""); 
+      setFirstName(""); 
+      setLastName("");
+
+       setTimeout(() => {
+        router.push("/login");
+      }, 1500);
+     
+    } else {
+       setBackendError(data.message);
+    }
+  } catch (error) {
+    setBackendError("Ocorreu um erro a tentar criar conta.");
+  }finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -61,23 +113,61 @@ export default function Register() {
               Seja Bem-Vindo(a)!
             </CardTitle>
             <CardDescription className="text-slate-600 dark:text-slate-400">
-              Crie sua conta para começar a usar o nosso sistema de recomendação de filmes!
+              Crie a sua conta para começar a usar o nosso sistema de recomendação de filmes!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="flex gap-4">
+             <div className="flex-1 space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input 
+                id="firstName" 
+                type="firstName"
+                autoComplete="given-name"
+                value={firstName}
+                onChange={e=>setFirstName(e.target.value)} 
+                placeholder="Martim" 
+                required />
+              </div>
+
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input 
+                id="lastName" 
+                type="text" 
+                autoComplete="family-name"
+                value={lastName}
+                onChange={e=>setLastName(e.target.value)} 
+                placeholder="Antunes" 
+                required />
+              </div>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input id="username" type="text" placeholder="username123" required />
+                <Input 
+                id="username" 
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                placeholder="Martim123" 
+                required />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="seu@email.com" required />
+                <Input 
+                id="email" 
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={e=>setEmail(e.target.value)} 
+                placeholder="martim@gmail.com" 
+                required />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative group">
                   <Input 
                     id="password" 
@@ -100,7 +190,7 @@ export default function Register() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="confpassword">Confirmar Senha</Label>
+                <Label htmlFor="confpassword">Confirmar Password</Label>
                 <div className="relative group">
                   <Input 
                     id="confpassword" 
@@ -144,21 +234,32 @@ export default function Register() {
                 {confirmPassword && password === confirmPassword && !passwordError && (
                   <p className="text-sm text-green-500 flex items-center gap-1">
                     <TbCheck className="size-3" />
-                    As senhas coincidem
+                    As Passwords coincidem
                   </p>
                 )}
+
+                {/* Backend Error */}
+                {backendError && (
+                  <p className="text-sm text-red-500 flex items-center gap-1 mt-2">
+                    <TbX className="size-3" /> {backendError}
+                  </p>
+)}
+
+                {successMessage && (
+                  <p className="text-sm text-green-500 flex items-center gap-1 mt-2 animate-fade-in">
+                    <TbCheck className="size-3" /> {successMessage}
+                  </p>
+)}
+
+                
               </div>
               
-              <Button 
-                type="submit" 
-                className={`w-full transition-all duration-500 ${
-                  passwordError 
-                    ? 'bg-gray-400 cursor-not-allowed hover:bg-gray-400' 
-                    : 'hover:cursor-pointer hover:bg-yellow-500 hover:text-white'
-                }`}
-                disabled={!!passwordError}
+              <Button
+                type="submit"
+                className={`w-full transition-all duration-500 ${isFormInvalid || loading ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-yellow-500 hover:text-white'}`}
+                disabled={isFormInvalid || loading}
               >
-                Criar Conta
+                {loading ? "A criar..." : "Criar Conta"}
               </Button>
             </form>
             

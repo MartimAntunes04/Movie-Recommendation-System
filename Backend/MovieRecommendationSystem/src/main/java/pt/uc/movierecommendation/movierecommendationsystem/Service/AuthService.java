@@ -28,9 +28,11 @@ public class AuthService {
     }
 
     public boolean signup(SignUpRequest signUpRequest) {
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(signUpRequest.getEmail()) ||
+                userRepository.existsByUsername(signUpRequest.getUsername())) {
             return false;
         }
+
 
         User user = new User();
         user.setEmail(signUpRequest.getEmail());
@@ -39,12 +41,7 @@ public class AuthService {
         user.setFirstName(signUpRequest.getFirstName());
         user.setLastName(signUpRequest.getLastName());
         userRepository.save(user);
+
         return true;
-
-
     }
-
-
-
-
 }

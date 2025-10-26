@@ -7,11 +7,36 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
-    throw new Error("Function not implemented.");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>){
+   event.preventDefault();
+
+   const request = await fetch("http://localhost:8080/login",{
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({email,password}),
+   });
+
+   const data = await request.json();
+
+    if (data.success) {
+      // salvar token no localStorage para usar depois
+      localStorage.setItem("token", data.token);
+      router.push("/");
+    } else {
+       setStatus("error");
+       setMessage("Incorret email ou password!");
+      
+    }
   }
 
   return (
@@ -36,12 +61,26 @@ export default function Login() {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="seu@email.com" required />
+              <Input 
+              id="email"
+              type="email" 
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="seu@email.com" 
+              required 
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password">Password</Label>
               <div className="relative group">
-                <Input id="password" type={showPassword ? "text" : "password"} placeholder="********" className="pr-10" required />
+                <Input 
+                id="password" 
+                type={showPassword ? "text" : "password"} 
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="********" className="pr-10" 
+                required 
+                />
                 <Button type="button" variant="ghost" className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-yellow-400  group-hover:text-yellow-500 transition-all duration-500 hover:cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? <TbEyeOff className="size-4" /> : <TbEye className="size-4" />}
               </Button>
@@ -50,6 +89,15 @@ export default function Login() {
             <Button type="submit" className="w-full hover:cursor-pointer hover:bg-yellow-500 hover:text-white transition-all duration-500">
               Entrar
             </Button>
+             {status !== "idle" && (
+          <p
+            className={`mt-4 text-center font-bold ${
+              status === "success" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {message}
+          </p>
+        )}
           </form>
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
               Não tem uma conta? {" "}

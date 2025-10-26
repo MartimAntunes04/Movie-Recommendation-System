@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.LoginRequest;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.SignUpRequest;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;
-
 import java.util.Map;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class AuthController {
 
@@ -29,8 +28,21 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public boolean signup (@RequestBody SignUpRequest signUpRequest) {
-        return authService.signup(signUpRequest);
+    public ResponseEntity<?> signup (@RequestBody SignUpRequest signUpRequest) {
+        boolean success = authService.signup(signUpRequest);
+
+        if (success) {
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Conta criada com sucesso!"
+            ));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "success", false,
+                            "message", "Email ou username já em uso!"
+                    ));
+        }
     }
 
 
