@@ -52,7 +52,7 @@ export default function Login() {
             </Button>
           </form>
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-              Não tem uma conta?{" "}
+              Não tem uma conta? {" "}
               <Button variant="link" className="text-blue-600 hover:cursor-pointer hover:text-blue-700 p-0 h-auto font-medium">
                 <Link href="/register">Cadastre-se</Link>
               </Button>
