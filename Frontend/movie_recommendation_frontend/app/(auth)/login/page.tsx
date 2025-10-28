@@ -54,7 +54,7 @@ export default function Login() {
               Bem-vindo de volta!
             </CardTitle>
             <CardDescription className="text-slate-600 dark:text-slate-400">
-              Entre na sua conta para continuar
+              Entre na sua conta
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
