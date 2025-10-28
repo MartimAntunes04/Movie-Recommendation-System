@@ -20,12 +20,18 @@ backend-test:
   image: maven:3.9.6-eclipse-temurin-17
   stage: test
   script:
+    - echo "Running backend tests..."
     - cd Backend/MovieRecommendationSystem
-    - mvn test
+    # Executa os testes com logs detalhados e falha o job se algum teste falhar
+    - mvn test -B -e
   artifacts:
+    when: always  # salva relatórios mesmo se o job falhar
     reports:
       junit: Backend/MovieRecommendationSystem/target/surefire-reports/*.xml
+    paths:
+      - Backend/MovieRecommendationSystem/target/surefire-reports/
   cache:
+    key: maven-cache
     paths:
       - .m2/repository
 
