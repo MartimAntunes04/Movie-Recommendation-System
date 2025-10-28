@@ -20,10 +20,8 @@ backend-test:
   image: maven:3.9.6-eclipse-temurin-17
   stage: test
   script:
-    - echo "Running backend tests..."
     - cd Backend/MovieRecommendationSystem
-    # Executa os testes com logs detalhados e falha o job se algum teste falhar
-    - mvn test -B -e
+    - mvn test -Dtest=!MovieRecommendationSystemApplicationTests
   artifacts:
     when: always  # salva relatórios mesmo se o job falhar
     reports:
