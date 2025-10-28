@@ -266,7 +266,7 @@ export default function Register() {
             <p className="text-center text-sm text-slate-600 dark:text-slate-400">
               Já tem uma conta? {" "}
               <Button variant="link" className="text-blue-600 hover:cursor-pointer hover:text-blue-700 p-0 h-auto font-medium">
-                <Link href="/login">Entre aqui</Link>
+                <Link href="/login">Clique aqui</Link>
               </Button>
             </p>
           </CardContent>
