@@ -48,3 +48,13 @@ frontend-build:
     paths:
       - Frontend/node_modules
 
+deploy:
+  stage: deploy
+  image: docker:24.0.5  
+  services:
+    - docker:dind       
+  script:
+    - docker-compose up -d --build
+  only:
+    - main  
+
