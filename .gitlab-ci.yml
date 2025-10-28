@@ -38,12 +38,12 @@ frontend-build:
   image: node:20
   stage: build
   script:
-    - cd Frontend/movie_recomendation_front
+    - cd Frontend/movie_recomendantion_front
     - npm install
     - npm run build
   artifacts:
     paths:
-      - Frontend/movie_recomendation_front/build
+      - Frontend/movie_recomendantion_front/build
   cache:
     paths:
       - Frontend/node_modules
