@@ -1,0 +1,50 @@
+stages:
+  - build
+  - test
+  - deploy
+
+backend-build:
+  image: maven:3.9.6-eclipse-temurin-17
+  stage: build
+  script:
+    - cd Backend/MovieRecommendationSystem
+    - mvn clean install -DskipTests
+  artifacts:
+    paths:
+      - Backend/MovieRecommendationSystem/target/*.jar
+  cache:
+    paths:
+      - .m2/repository
+
+backend-test:
+  image: maven:3.9.6-eclipse-temurin-17
+  stage: test
+  script:
+    - cd Backend/MovieRecommendationSystem
+    - mvn test -Dtest=!MovieRecommendationSystemApplicationTests
+  artifacts:
+    when: always  # salva relatórios mesmo se o job falhar
+    reports:
+      junit: Backend/MovieRecommendationSystem/target/surefire-reports/*.xml
+    paths:
+      - Backend/MovieRecommendationSystem/target/surefire-reports/
+  cache:
+    key: maven-cache
+    paths:
+      - .m2/repository
+
+
+frontend-build:
+  image: node:20
+  stage: build
+  script:
+    - cd Frontend/movie_recommendation_frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - Frontend/movie_recommendation_frontend/build
+  cache:
+    paths:
+      - Frontend/node_modules
+
