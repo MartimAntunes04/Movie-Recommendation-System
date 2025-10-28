@@ -1,0 +1,31 @@
+stages:
+  - build
+  - test
+  - deploy
+
+backend-build:
+  image: maven:3.9.1-openjdk-23
+  stage: build
+  script:
+    - cd Backend/MovieRecommendationSystem
+    - mvn clean install -DskipTests
+  artifacts:
+    paths:
+      - Backend/MovieRecommendationSystem/target/*.jar
+  cache:
+    paths:
+      - .m2/repository
+
+backend-test:
+  image: maven:3.9.1-openjdk-23
+  stage: test
+  script:
+    - cd Backend/MovieRecommendationSystem
+    - mvn test
+  artifacts:
+    reports:
+      junit: Backend/MovieRecommendationSystem/target/surefire-reports/*.xml
+  cache:
+    paths:
+      - .m2/repository
+
