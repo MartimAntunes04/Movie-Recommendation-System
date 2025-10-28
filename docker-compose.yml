@@ -12,6 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      - ./Backend/MovieRecommendationSystem/init.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
 
   backend:
@@ -23,6 +24,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/Moviedb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 123
+      TMDB_API_KEY: 81c88265283a6f68e13fdf25e8a6a2ac
 
     env_file:
       - .env
@@ -30,7 +32,7 @@ services:
       - db
 
   frontend:
-    build: ./Frontend/movie_recomendantion_front
+    build: ./Frontend/movie_recommendation_frontend
     container_name: movie-frontend
     ports:
       - "3000:3000"
