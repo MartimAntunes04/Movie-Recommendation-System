@@ -4,7 +4,7 @@ stages:
   - deploy
 
 backend-build:
-  image: maven:3.9.1-openjdk-23
+  image: maven:3.9.6-eclipse-temurin-17
   stage: build
   script:
     - cd Backend/MovieRecommendationSystem
@@ -17,7 +17,7 @@ backend-build:
       - .m2/repository
 
 backend-test:
-  image: maven:3.9.1-openjdk-23
+  image: maven:3.9.6-eclipse-temurin-17
   stage: test
   script:
     - cd Backend/MovieRecommendationSystem
