@@ -8,6 +8,8 @@ import pt.uc.movierecommendation.movierecommendationsystem.Model.LoginRequest;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.SignUpRequest;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;
 import java.util.Map;
+
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class AuthController {
@@ -44,6 +46,4 @@ public class AuthController {
                     ));
         }
     }
-
-
 }

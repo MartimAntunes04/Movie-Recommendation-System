@@ -13,11 +13,13 @@ import java.util.Optional;
 @Service
 public class ProfileService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
+    public ProfileService(UserRepository userRepository, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
 
     public ResponseEntity<?> getProfile(String tokenHeader) {
         // remove o prefixo "Bearer "

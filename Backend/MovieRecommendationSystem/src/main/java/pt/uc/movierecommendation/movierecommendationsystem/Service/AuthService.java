@@ -14,11 +14,13 @@ import java.util.Map;
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
+    public AuthService(UserRepository userRepository, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
 
     public String login(String email, String password) {
         return userRepository.findByEmail(email)
