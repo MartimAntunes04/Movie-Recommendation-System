@@ -36,7 +36,7 @@ public class AuthController {
         if (success) {
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", "Conta criada com sucesso!"
+                    "message", "Account created successfully!"
             ));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
