@@ -26,12 +26,14 @@ export async function login(email: string, password: string) {
       body: JSON.stringify({ email, password }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error("Erro na resposta do servidor");
+      return { success: false, message: data.message || "Erro ao fazer login" };
     }
 
-    const data = await response.json();
-    return data; // retorna { success: true/false, token?: string }
+    return data; // { success: true, token: "..." }
+
   } catch (error) {
     console.error("Erro ao fazer login:", error);
     return { success: false, message: "Erro ao conectar ao servidor" };
