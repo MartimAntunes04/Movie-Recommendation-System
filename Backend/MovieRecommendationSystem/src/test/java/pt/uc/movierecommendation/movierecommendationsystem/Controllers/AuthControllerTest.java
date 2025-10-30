@@ -100,7 +100,7 @@ public class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Conta criada com sucesso!"));
+                .andExpect(jsonPath("$.message").value("Account created successfully!"));
     }
 
     @Test
@@ -119,6 +119,6 @@ public class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Email ou username já em uso!"));
+                .andExpect(jsonPath("$.message").value("Email or username already in use!"));
     }
 }
