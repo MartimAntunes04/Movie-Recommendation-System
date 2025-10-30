@@ -110,10 +110,10 @@ export default function Register() {
               </span>
             </div>
             <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-              Seja Bem-Vindo(a)!
+              Welcome!
             </CardTitle>
             <CardDescription className="text-slate-600 dark:text-slate-400">
-              Crie a sua conta para começar a usar o nosso sistema de recomendação de filmes!
+              Create your account to start using our movie recommendation system!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -190,7 +190,7 @@ export default function Register() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="confpassword">Confirmar Password</Label>
+                <Label htmlFor="confpassword">Confirm Password</Label>
                 <div className="relative group">
                   <Input 
                     id="confpassword" 
@@ -234,7 +234,7 @@ export default function Register() {
                 {confirmPassword && password === confirmPassword && !passwordError && (
                   <p className="text-sm text-green-500 flex items-center gap-1">
                     <TbCheck className="size-3" />
-                    As Passwords coincidem
+                    The passwords match
                   </p>
                 )}
 
@@ -259,14 +259,14 @@ export default function Register() {
                 className={`w-full transition-all duration-500 ${isFormInvalid || loading ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-yellow-500 hover:text-white'}`}
                 disabled={isFormInvalid || loading}
               >
-                {loading ? "A criar..." : "Criar Conta"}
+                {loading ? "To be created..." : "Create Account"}
               </Button>
             </form>
             
-            <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-              Já tem uma conta? {" "}
+            <p className="text-center text-sm text-slate-600 dark:text-slate-400">    
+              Do you already have an account? {" "}
               <Button variant="link" className="text-blue-600 hover:cursor-pointer hover:text-blue-700 p-0 h-auto font-medium">
-                <Link href="/login">Clique aqui</Link>
+                <Link href="/login">Click here</Link>
               </Button>
             </p>
           </CardContent>

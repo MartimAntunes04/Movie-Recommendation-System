@@ -42,7 +42,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
                             "success", false,
-                            "message", "Email ou username já em uso!"
+                            "message", "Email or username already in use!"
                     ));
         }
     }

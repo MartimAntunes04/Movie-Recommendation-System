@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { login } from "@/Services/API";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,22 +21,13 @@ export default function Login() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>){
    event.preventDefault();
 
-   const request = await fetch("http://localhost:8080/login",{
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({email,password}),
-   });
-
-   const data = await request.json();
-
-    if (data.success) {
-      // salvar token no localStorage para usar depois
-      localStorage.setItem("token", data.token);
+   const data = await login(email,password);
+   if(data.success){
+      localStorage.setItem("token",data.token);
       router.push("/");
-    } else {
-       setStatus("error");
-       setMessage("Incorret email ou password!");
-      
+   }else {
+      setStatus("error");
+      setMessage(data.message || "Email ou password incorretos!");
     }
   }
 
@@ -51,10 +43,10 @@ export default function Login() {
             </span>
           </div>
             <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-              Bem-vindo de volta!
+              Welcome back!
             </CardTitle>
             <CardDescription className="text-slate-600 dark:text-slate-400">
-              Entre na sua conta
+              Login to your account
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -100,9 +92,9 @@ export default function Login() {
         )}
           </form>
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-              Não tem uma conta? {" "}
+              Don't have an account? {" "}
               <Button variant="link" className="text-blue-600 hover:cursor-pointer hover:text-blue-700 p-0 h-auto font-medium">
-                <Link href="/register">Registe-se</Link>
+                <Link href="/register">Register</Link>
               </Button>
             </p>
           </CardContent>

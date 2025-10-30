@@ -1,17 +1,22 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect,FormEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { TbMovie, TbSearch, TbUser, TbLogout, TbSettings } from 'react-icons/tb';
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useRouter } from "next/navigation";
+
 
 export function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
+  
+  
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
@@ -23,9 +28,12 @@ export function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
+   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Pesquisando por:", searchQuery);
+    if (!searchQuery.trim()) return;
+
+    // Redireciona para /search?query=...
+    router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
   };
 
   
@@ -48,16 +56,16 @@ export function Navbar() {
             <form onSubmit={handleSearch} className="relative">
               <Input
                 type="text"
-                placeholder="Pesquisar..."
+                placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border-slate-200 dark:border-slate-700 focus:ring-2"
+                className="pl-3 pr-3 py-2 w-full border-slate-200 dark:border-slate-700 focus:ring-2"
               />
               <Button
                 type="submit"
                 variant="ghost"
                 size="sm"
-                className="absolute left-2 top-1/2 -translate-y-1/2 p-1 h-6 w-6 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 h-6 w-6 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <TbSearch className="h-4 w-4" />
               </Button>
@@ -69,7 +77,7 @@ export function Navbar() {
             <div className="relative">
                 <div className="cursor-pointer rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors p-1"onClick={() => setShowUserMenu(!showUserMenu)}>
                 <Avatar className="h-8 w-8">
-                <AvatarImage src="https://github.com/shadcn.png" alt="Usuário" />
+                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
                 <AvatarFallback className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-medium">
                 U
                 </AvatarFallback>
@@ -81,30 +89,30 @@ export function Navbar() {
                         <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-700">
                         <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                        <AvatarImage src="https://github.com/shadcn.png" alt="Usuário" />
+                        <AvatarImage src="https://github.com/shadcn.png" alt="User" />
                         <AvatarFallback className="bg-linear-to-r from-yellow-500 to-orange-500 text-white font-medium">
                           U
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">Usuário</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">usuario@email.com</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">User</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">user@email.com</p>
                       </div>
                     </div>
                   </div>
                   
                   <Link href="/profile" className="flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                     <TbSettings className="h-4 w-4 mr-2" />
-                    Meu Perfil
+                    My Profile
                   </Link>
                   <Link href="/settings" className="flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                     <TbSettings className="h-4 w-4 mr-2" />
-                    Configurações
+                    Settings
                   </Link>
                   <hr className="my-1 border-slate-200 dark:border-slate-700" />
                   <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                     <TbLogout className="h-4 w-4 mr-2" />
-                    Sair
+                    Exit
                   </button>
                 </div>
               )}
