@@ -5,7 +5,7 @@ import pt.uc.movierecommendation.movierecommendationsystem.Model.User;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository <User, Integer> {
+public interface UserRepository extends JpaRepository <User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
