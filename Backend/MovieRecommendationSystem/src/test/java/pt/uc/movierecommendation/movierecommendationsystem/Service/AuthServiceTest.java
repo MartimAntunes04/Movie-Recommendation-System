@@ -5,23 +5,31 @@ import org.junit.jupiter.api.Test;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.SignUpRequest;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.User;
 import pt.uc.movierecommendation.movierecommendationsystem.Repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+
 
 public class AuthServiceTest {
 
     private UserRepository userRepository;
     private JwtService jwtService;
+    private PasswordEncoder encoder;
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        userRepository = mock(UserRepository.class);
-        jwtService = mock(JwtService.class);
-        authService = new AuthService(userRepository, jwtService);
+        this.userRepository = mock(UserRepository.class);
+        this.jwtService = mock(JwtService.class);
+        this.encoder = new BCryptPasswordEncoder();
+        this.authService = new AuthService(userRepository, jwtService, encoder);
     }
 
     // --- LOGIN TESTES ---
@@ -33,7 +41,11 @@ public class AuthServiceTest {
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(encoder.encode(password));
+        user.setUsername("testUser");
+        user.setFirstName("test");
+        user.setLastName("user");
+        user.setRegistrationDate(LocalDate.now());
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(jwtService.generateToken(email)).thenReturn("token-gerado");
@@ -48,10 +60,15 @@ public class AuthServiceTest {
     @Test
     void passwordErrada(){
         String email = "test@exemplo.com";
+        String password = "123";
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword("123");
+        user.setPassword(encoder.encode(password));
+        user.setUsername("testUser");
+        user.setFirstName("test");
+        user.setLastName("user");
+        user.setRegistrationDate(LocalDate.now());
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
