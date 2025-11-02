@@ -7,6 +7,7 @@ import { TbMovie, TbSearch, TbUser, TbLogout, TbSettings } from 'react-icons/tb'
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 export function Navbar() {
@@ -14,7 +15,7 @@ export function Navbar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  
+  const { logout } = useAuth();
   
   
   useEffect(() => {
@@ -32,8 +33,12 @@ export function Navbar() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    // Redireciona para /search?query=...
     router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setShowUserMenu(false);
   };
 
   
@@ -110,7 +115,10 @@ export function Navbar() {
                     Settings
                   </Link>
                   <hr className="my-1 border-slate-200 dark:border-slate-700" />
-                  <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  >
                     <TbLogout className="h-4 w-4 mr-2" />
                     Exit
                   </button>

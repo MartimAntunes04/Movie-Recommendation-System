@@ -1,5 +1,21 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+// Helper para obter o token - VERSÃO CORRIGIDA
+function getAuthHeaders(): HeadersInit {
+  const token = localStorage.getItem("token");
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  
+  if (token) {
+    return {
+      ...headers,
+      Authorization: `Bearer ${token}`,
+    };
+  }
+  
+  return headers;
+}
 
 export type Movie = {
   id: number;
@@ -32,7 +48,7 @@ export async function login(email: string, password: string) {
       return { success: false, message: data.message || "Erro ao fazer login" };
     }
 
-    return data; // { success: true, token: "..." }
+    return data;
 
   } catch (error) {
     console.error("Erro ao fazer login:", error);
@@ -70,9 +86,7 @@ export async function searchMovies(
       `${API_URL}/movies/search?query=${encodeURIComponent(query)}`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(), 
       }
     );
 
@@ -80,7 +94,6 @@ export async function searchMovies(
       throw new Error(`Erro ao buscar filmes: ${response.statusText}`);
     }
 
-    // O backend deve retornar algo como: { results: [{ id, title, ... }] }
     const data = await response.json();
     return data;
   } catch (error) {
@@ -89,19 +102,13 @@ export async function searchMovies(
   }
 }
 
-
-
-
-
-  export async function popularMovies(): Promise<{ results: Movie[] }> {
+export async function popularMovies(): Promise<{ results: Movie[] }> {
   try {
     const response = await fetch(
       `${API_URL}/movies/popular`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(), 
       }
     );
 

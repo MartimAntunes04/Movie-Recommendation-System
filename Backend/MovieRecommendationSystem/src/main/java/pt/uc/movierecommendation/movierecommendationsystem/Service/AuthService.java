@@ -47,7 +47,6 @@ public class AuthService {
         user.setLastName(signUpRequest.getLastName());
         user.setRegistrationDate(LocalDate.now());
         userRepository.save(user);
-
         return true;
     }
 }
