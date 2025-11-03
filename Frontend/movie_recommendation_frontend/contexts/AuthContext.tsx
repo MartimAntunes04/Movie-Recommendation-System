@@ -1,6 +1,8 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import router from "next/router";
 
 interface AuthContextType {
   token: string | null;
@@ -10,6 +12,7 @@ interface AuthContextType {
   loading: boolean;
 }
 
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -17,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+
 
   // Carregar token do localStorage quando o componente montar
   useEffect(() => {
@@ -34,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!token && !isPublicRoute) {
         router.push("/login");
       } else if (token && isPublicRoute) {
-        router.push("/");
+router.push("/");
       }
     }
   }, [token, loading, pathname, router]);
@@ -47,8 +51,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
+    // Limpar cache do perfil
+    if (typeof window !== 'undefined') {
+      (window as any).__userProfileCache = null;
+    }
+    
     router.push("/login");
   };
+  
 
   return (
     <AuthContext.Provider
