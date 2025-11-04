@@ -1,14 +1,12 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.User;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.UserRepository;
-import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.ProfileService;
 
-import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -20,24 +18,27 @@ public class UserControler {
     private ProfileService profileService;
 
     @GetMapping
-    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String tokenHeader) {
-        return profileService.getProfile(tokenHeader);
+    public ResponseEntity<?> getProfile() {
+        // Security filter already validated the JWT and set Authentication
+        return profileService.getProfile();
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String token, @RequestBody User user) {
-        boolean updateProfile = profileService.updateProfile(
-                token,
+    public ResponseEntity<?> updateProfile(@RequestBody User user) {
+        boolean updated = profileService.updateProfile(
                 user.getEmail(),
                 user.getUsername(),
-                user.getPassword(),
+                user.getPassword(),  // will be encoded in service
                 user.getFirstName(),
                 user.getLastName()
         );
 
-        return ResponseEntity.ok(Map.of(
-                "success",updateProfile
-        ));
+        if (!updated) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "Could not update profile"));
+        }
+
+        return ResponseEntity.ok(Map.of("success", true));
     }
 
 

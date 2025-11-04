@@ -1,9 +1,5 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Service;
 
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.SignUpRequest;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.User;
@@ -11,7 +7,6 @@ import pt.uc.movierecommendation.movierecommendationsystem.Repository.UserReposi
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 @Service
 public class AuthService {
