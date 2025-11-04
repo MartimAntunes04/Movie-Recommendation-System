@@ -1,3 +1,5 @@
+import PublicOnlyGuard from "@/components/PublicOnlyGuard";
+
 // app/(auth)/layout.tsx
 export default function AuthLayout({
         children,
@@ -6,7 +8,7 @@ export default function AuthLayout({
       }) {
         return (
           <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-            {children}
+            <PublicOnlyGuard>{children}</PublicOnlyGuard>
           </div>
         );
       }

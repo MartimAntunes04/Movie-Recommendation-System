@@ -26,6 +26,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: 123
       TMDB_API_KEY: ${TMDB_API_KEY}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      JWT_SECRET: ${JWT_SECRET}
     env_file:
       - .env
     depends_on:
