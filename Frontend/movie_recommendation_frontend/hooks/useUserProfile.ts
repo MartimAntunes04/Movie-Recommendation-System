@@ -21,12 +21,6 @@ export function useUserProfile(token: string | null) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Se não tem token, limpar perfil
-    if (!token) {
-      setProfile(null);
-      cachedProfile = null;
-      return;
-    }
 
     // Verificar se o cache ainda é válido
     const isCacheValid = 
