@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Carregar token do localStorage
     const storedToken = localStorage.getItem("token");
     
-    // Verificar se o token existe, não está vazio e não está expir\ado
+    // Verificar se o token existe, não está vazio e não está expirado
     if (storedToken && storedToken.trim() !== '') {
       // Validar se o token não está expirado
       if (isTokenExpired(storedToken)) {
