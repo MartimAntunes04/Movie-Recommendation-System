@@ -1,4 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL
+const TOKEN_KEY = 'auth_token';
 
 // Helper para obter o token - VERSÃO CORRIGIDA
 function getAuthHeaders(): HeadersInit {
@@ -34,6 +35,34 @@ export type Movie = {
   popularity: number;
 };
 
+function setToken(token: string) {
+  if (typeof window !== 'undefined') localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function getToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function clearToken() {
+  if (typeof window !== 'undefined') localStorage.removeItem(TOKEN_KEY);
+}
+
+function authHeaders(base?: Record<string, string>) {
+  const t = getToken();
+  return {
+    ...(base || {}),
+    ...(t ? { Authorization: `Bearer ${t}` } : {}),
+  };
+}
+
+function handleUnauthorized(response: Response) {
+  if (typeof window !== 'undefined' && response.status === 401) {
+    clearToken();
+    window.location.href = '/login';
+  }
+}
+
 export async function login(email: string, password: string) {
   try {
     const response = await fetch(`${API_URL}/login`, {
@@ -42,14 +71,24 @@ export async function login(email: string, password: string) {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      return { success: false, message: data.message || "Erro ao fazer login" };
+    // Parse body safely (JSON or text or empty)
+    const ct = response.headers.get("content-type") || "";
+    let payload: any = null;
+    if (ct.includes("application/json")) {
+      payload = await response.json();
+    } else {
+      const text = await response.text();
+      try { payload = text ? JSON.parse(text) : null; } catch { payload = { message: text }; }
     }
 
-    return data;
+    if (!response.ok) {
+      return {
+        success: false,
+        message: payload?.message || payload?.error || (response.status === 401 ? "Credenciais inválidas" : "Erro ao fazer login"),
+      };
+    }
 
+    return payload; // { success: true, token: "..." }
   } catch (error) {
     console.error("Erro ao fazer login:", error);
     return { success: false, message: "Erro ao conectar ao servidor" };
@@ -91,6 +130,7 @@ export async function searchMovies(
     );
 
     if (!response.ok) {
+      handleUnauthorized(response);
       throw new Error(`Erro ao buscar filmes: ${response.statusText}`);
     }
 
@@ -113,6 +153,7 @@ export async function popularMovies(): Promise<{ results: Movie[] }> {
     );
 
     if (!response.ok) {
+      handleUnauthorized(response);
       throw new Error(`Erro ao buscar filmes: ${response.statusText}`);
     }
 
@@ -122,4 +163,8 @@ export async function popularMovies(): Promise<{ results: Movie[] }> {
     console.error("Erro na requisição searchMovies:", error);
     throw error;
   }
+}
+
+export function logout() {
+  clearToken();
 }

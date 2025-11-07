@@ -1,53 +1,55 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-
+import java.util.Optional;
 @Service
 public class JwtService {
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hora
+
+    @Value("${jwt.secret:}")
+    private String secretBase64;
+
+    @Value("${jwt.expiration-ms:3600000}")
+    private long expirationMs;
+
+    private Key signingKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64));
+    }
 
     public String generateToken(String email) {
+        Date now = new Date();
         return Jwts.builder()
                 .setSubject(email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SECRET_KEY)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expirationMs))
+                .signWith(signingKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String extractEmail(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
-
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    public String extractUsername(String token) {
+    public Optional<String> validateAndExtractEmail(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return Optional.ofNullable(claims.getSubject());
+        } catch (JwtException | IllegalArgumentException e) {
+            return Optional.empty();
+        }
+    }
+
+    public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
-    }
-
-    public boolean isTokenValid(String token, String username) {
-        return username.equals(extractUsername(token)) && !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractAllClaims(token).getExpiration().before(new Date());
     }
 }
