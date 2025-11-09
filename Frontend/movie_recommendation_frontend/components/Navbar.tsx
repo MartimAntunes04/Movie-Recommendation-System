@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUserProfile, getInitials } from "@/hooks/useUserProfile";
+import { useUserProfile, getInitials, clearUserProfileCache } from "@/hooks/useUserProfile";
 
 export function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,6 +40,7 @@ export function Navbar() {
   const handleLogout = () => {
     logout();
     setShowUserMenu(false);
+    clearUserProfileCache();
   };
 
   // Obter iniciais para o avatar
@@ -154,7 +155,7 @@ export function Navbar() {
                     className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                   >
                     <TbLogout className="h-4 w-4 mr-2" />
-                    Exit
+                    Logout
                   </button>
                 </div>
               )}

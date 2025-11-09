@@ -16,11 +16,13 @@ let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 min
 
 export function useUserProfile(token: string | null) {
-  const [profile, setProfile] = useState<UserProfile | null>(cachedProfile);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(!cachedProfile);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+
+     if (!token) return;
 
     // Verificar se o cache ainda é válido
     const isCacheValid = 
@@ -118,4 +120,9 @@ export function getInitials(firstName?: string, lastName?: string): string {
   const first = firstName?.[0]?.toUpperCase() || '';
   const last = lastName?.[0]?.toUpperCase() || '';
   return `${first}${last}` || 'U';
+}
+
+export function clearUserProfileCache() {
+  cachedProfile = null;
+  cacheTimestamp = 0;
 }

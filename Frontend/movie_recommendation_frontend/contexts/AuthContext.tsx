@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { clearUserProfileCache } from "@/hooks/useUserProfile";
 
 interface AuthContextType {
   token: string | null;
@@ -98,16 +99,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem("token");
-      // Limpar cache do perfil
-      (window as any).__userProfileCache = null;
-    }
-    setToken(null);
-    redirectingRef.current = true;
-    router.push("/login");
-    setTimeout(() => { redirectingRef.current = false; }, 1000);
-  };
+  localStorage.removeItem("token");
+  clearUserProfileCache(); // limpa cache real
+  setToken(null);
+  router.push("/login");
+};
 
   return (
     <AuthContext.Provider
