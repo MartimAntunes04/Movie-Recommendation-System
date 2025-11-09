@@ -33,7 +33,7 @@ export default function Home() {
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
             Discover the{" "}
-            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
               best movies
             </span>
           </h1>

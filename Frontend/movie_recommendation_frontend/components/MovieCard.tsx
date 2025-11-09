@@ -21,7 +21,7 @@ export function MovieCard({
   // Configurações de tamanho
   const sizeConfig = {
     small: {
-      imageUrl: "w185",
+      imageUrl: "w500",
       iconSize: "text-2xl",
       titleSize: "text-[11px]",
       ratingSize: "text-[10px]",
@@ -30,7 +30,7 @@ export function MovieCard({
       overlayTextSize: "text-[10px]",
     },
     medium: {
-      imageUrl: "w342",
+      imageUrl: "w500",
       iconSize: "text-4xl",
       titleSize: "text-sm",
       ratingSize: "text-xs",
