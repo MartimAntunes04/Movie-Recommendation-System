@@ -1,39 +1,39 @@
 "use client";
-import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TbMovie, TbStar, TbTrendingUp, TbPlayerPlay } from 'react-icons/tb';
-import { FormEvent, useEffect, useState } from "react";
+import { TbMovie, TbStar, TbTrendingUp, TbPlayerPlay, TbSparkles } from 'react-icons/tb';
+import { useEffect, useState } from "react";
 import { Movie, popularMovies } from "@/Services/API";
+import { MovieCarousel } from "@/components/MovieCarousel";
 
 export default function Home() {
-
-  const [moviesPop,setMoviesPop] = useState<Movie[]>([]);
+  const [moviesPop, setMoviesPop] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchPopular = async () => {
-      setLoading(true)
-      try{
+      setLoading(true);
+      try {
         const data = await popularMovies();
         setMoviesPop(data.results || []);
-      }catch(err){
+      } catch (err) {
         console.error(err);
-      }finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPopular();
-  },[]);
+  }, []);
 
   return (
     <div className="min-h-screen">
       <main className="container mx-auto px-4 py-8">
-        <div className="text-center">
+        {/* Hero Section */}
+        <div className="text-center mb-10">
           <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6">
             Discover the{" "}
-            <span className="bg-linear-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
               best movies
             </span>
           </h1>
@@ -42,43 +42,30 @@ export default function Home() {
           </p>
         </div>
 
+        {/* Popular Movies Carousel */}
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-6">
+            <TbTrendingUp className="text-3xl text-yellow-500" />
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Popular Movies
+            </h2>
+          </div>
 
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Popular Movies</h2>
-
-          {loading && (
-            <p className="text-slate-400 text-center mb-4">Carregando filmes...</p>
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-slate-300 border-t-yellow-500 mb-4"></div>
+                <p className="text-slate-400">Loading amazing movies...</p>
+              </div>
+            </div>
+          ) : moviesPop.length > 0 ? (
+            <MovieCarousel movies={moviesPop} />
+          ) : (
+            <div className="text-center py-20">
+              <p className="text-slate-400">No movies found</p>
+            </div>
           )}
-
-          {!loading && moviesPop.length > 0 && (
-            <ul className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mx-auto">
-              {moviesPop.map((m) => (
-                <li
-                  key={m.id}
-                  className="bg-slate-800 p-1 rounded-lg hover:bg-slate-700 transition"
-                >
-                  {m.poster_path ? (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w200${m.poster_path}`}
-                      alt={m.title}
-                      className="w-full h-32 sm:h-40 md:h-44 rounded-md mb-1 object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-32 sm:h-40 md:h-44 bg-gray-700 flex items-center justify-center text-gray-300 mb-1">
-                      Sem imagem
-                    </div>
-                  )}
-                  <h3 className="font-semibold text-xs sm:text-sm truncate">{m.title}</h3>
-                  <p className="text-yellow-400 text-xs">{m.vote_average}/10</p>
-                </li>
-              ))}
-            </ul>
-          )}
-
-
-          </div>  
-
-
+        </div>
       </main>
     </div>
   );

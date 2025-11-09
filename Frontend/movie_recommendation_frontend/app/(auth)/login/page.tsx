@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle,  CardDescription } from "@/components/ui/card";	
 import { TbEye, TbEyeOff, TbMovie } from 'react-icons/tb';
 import { Label } from "@/components/ui/label";
@@ -7,25 +6,24 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { login } from "@/Services/API";
+import { login as apiLogin } from "@/Services/API";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const { login } = useAuth();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>){
    event.preventDefault();
 
-   const data = await login(email,password);
+   const data = await apiLogin(email, password);
    if(data.success){
-      localStorage.setItem("token",data.token);
-      router.push("/");
-   }else {
+      login(data.token); // Usa o context ao invés de localStorage direto
+   } else {
       setStatus("error");
       setMessage(data.message || "Email ou password incorretos!");
     }
