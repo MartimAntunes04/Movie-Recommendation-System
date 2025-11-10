@@ -1,0 +1,29 @@
+{
+  "name": "tp-ads",
+  "build": {
+    "dockerfile": "dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",             // Meta-pack including core Java tools
+        "vscjava.vscode-java-debug",            // Debugger for Java
+        "vscjava.vscode-java-dependency",       // Project dependency viewer
+        "vscjava.vscode-java-test",             // JUnit testing support
+        "redhat.java",                          // Language support for Java (LSP)
+        "vscjava.vscode-maven",                 // Maven integration
+        "vscjava.vscode-gradle",                // Gradle support
+        "sonarsource.sonarlint-vscode",         // Code quality / static analysis
+        "eamodio.gitlens"                       // Git insights
+      ],
+      "settings": {
+        "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+        "java.format.settings.profile": "GoogleStyle",
+        "java.compile.nullAnalysis.mode": "automatic",
+        "java.saveActions.organizeImports": true,
+        "editor.formatOnSave": true,
+        "maven.executable.path": "/usr/share/maven/bin/mvn"
+      }
+    }
+  }
+}
