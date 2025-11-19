@@ -9,6 +9,7 @@ import { TbEye, TbEyeOff, TbArrowLeft, TbCheck, TbX } from 'react-icons/tb';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState, useEffect } from "react";
+import { updateProfile } from "@/Services/API";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -80,21 +81,12 @@ export default function EditProfilePage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/profile/update`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          username,
-          firstName,
-          lastName,
-          password: password || undefined, // Only send if provided
-        }),
-      });
-
-      const data = await response.json();
+      
+      if (!token) {
+        console.error("Usuário não autenticado ou token não disponível");
+        return;
+      }      
+      const data = await updateProfile(token,username,firstName,lastName,password);
 
       if (data.success) {
         setSuccessMessage("Perfil atualizado com sucesso!");

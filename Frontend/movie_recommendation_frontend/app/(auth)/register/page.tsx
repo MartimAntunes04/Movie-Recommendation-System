@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { register } from "@/Services/API";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -55,21 +56,7 @@ export default function Register() {
     }
 
      try {
-    const response = await fetch("http://localhost:8080/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        email,
-        password,
-        firstName,
-        lastName,
-      }),
-    });
-
-    const data = await response.json();
+      const data = await register(email, password, username, firstName, lastName);
 
     if (data.success) {
 
