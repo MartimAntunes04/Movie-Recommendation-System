@@ -31,6 +31,7 @@ export type Movie = {
   original_title: string;
   original_language: string;
   genre_ids: number[];
+  genres?: { id: number; name: string }[];
   video: boolean;
   popularity: number;
 };
@@ -165,6 +166,30 @@ export async function popularMovies(): Promise<{ results: Movie[] }> {
   }
 }
 
+
+export async function topRatedMovies(): Promise<{ results: Movie[] }> {
+  try {
+    const response = await fetch(
+      `${API_URL}/movies/top`,
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      handleUnauthorized(response);
+      throw new Error(`Erro ao buscar filmes top rated: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Erro na requisição topRatedMovies:", error);
+    throw error;
+  }
+}
+
 export function logout() {
   clearToken();
 }
@@ -204,3 +229,27 @@ export async function updateProfile(
     return { success: false, message: "Erro ao conectar ao servidor" };
   }
 }
+
+
+export async function getMovieById(id: string): Promise<Movie> {
+  try {
+    const response = await fetch(`${API_URL}/movies/${encodeURIComponent(id)}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      handleUnauthorized(response);
+      throw new Error(`Erro ao buscar filme: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('Dados do filme recebidos:', data);
+    return data as Movie;
+  } catch (err) {
+    console.error('Erro em getMovieById:', err);
+    throw err;
+  }
+}
+
+

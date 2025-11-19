@@ -17,7 +17,7 @@ export function Navbar() {
   const router = useRouter();
   const { token, logout } = useAuth();
   
-  // Buscar perfil do usuário com cache
+  // Buscar perfil do user com cache
   const { profile, loading } = useUserProfile(token);
   
   useEffect(() => {
@@ -55,7 +55,11 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3 text-yellow-500 hover:text-yellow-600 transition-colors">
+            <Link 
+            href="/" 
+            className="flex items-center gap-3 text-yellow-500 hover:text-yellow-600 transition-colors"
+            onClick={() => setSearchQuery("")}
+            >
               <TbMovie className="text-2xl" />
               <span className="hidden sm:block text-xl font-bold bg-linear-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
                 MovieRec
