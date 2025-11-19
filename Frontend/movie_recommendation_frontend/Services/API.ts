@@ -95,12 +95,12 @@ export async function login(email: string, password: string) {
   }
 }
 
-export async function register(email: string, password: string,userName:string,firstName:string,lastName:string){
+export async function register(email: string, password: string,username:string,firstName:string,lastName:string){
   try{
     const response = await fetch(`${API_URL}/signup`,{
       method:"POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password,userName,firstName,lastName }),
+      body: JSON.stringify({ email, password,username,firstName,lastName }),
     });
 
     if (!response.ok) {
@@ -167,4 +167,40 @@ export async function popularMovies(): Promise<{ results: Movie[] }> {
 
 export function logout() {
   clearToken();
+}
+
+export async function updateProfile(
+  token: string,
+  username: string,
+  firstName: string,
+  lastName: string,
+  password?: string
+) {
+  try {
+    const response = await fetch(`${API_URL}/profile/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        username,
+        firstName,
+        lastName,
+        ...(password ? { password } : {}), // só envia se existir
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Erro ao atualizar perfil");
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Erro ao atualizar perfil:", error);
+    return { success: false, message: "Erro ao conectar ao servidor" };
+  }
 }

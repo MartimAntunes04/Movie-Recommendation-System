@@ -28,10 +28,9 @@ public class UserControler {
         boolean updated = profileService.updateProfile(
                 user.getEmail(),
                 user.getUsername(),
-                user.getPassword(),  // will be encoded in service
+                user.getPassword(), // will be encoded in service
                 user.getFirstName(),
-                user.getLastName()
-        );
+                user.getLastName());
 
         if (!updated) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -40,9 +39,5 @@ public class UserControler {
 
         return ResponseEntity.ok(Map.of("success", true));
     }
-
-
-
-
 
 }
