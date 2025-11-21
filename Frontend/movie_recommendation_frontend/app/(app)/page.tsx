@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TbMovie, TbStar, TbTrendingUp, TbPlayerPlay, TbSparkles } from 'react-icons/tb';
+import { TbMovie, TbStar, TbTrendingUp,TbArrowBigUpLine } from 'react-icons/tb';
 import { useEffect, useState } from "react";
 import { Movie, popularMovies, topRatedMovies } from "@/Services/API";
 import { MovieCarousel } from "@/components/MovieCarousel";
@@ -12,16 +12,18 @@ function MovieSection({
   movies,
   loading,
   onMovieClick,
+  icon: Icon,
 }: {
   title: string;
   movies: Movie[];
   loading: boolean;
   onMovieClick: (movie: Movie) => void;
+  icon: React.ComponentType<{className?:string}>;
 }) {
   return (
     <div className="mb-12">
       <div className="flex items-center gap-3 mb-6">
-        <TbTrendingUp className="text-3xl text-yellow-500" />
+        <Icon className="text-3xl text-yellow-500" />
         <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
           {title}
         </h2>
@@ -98,6 +100,7 @@ export default function Home() {
           title="Popular Movies"
           movies={moviesPop}
           loading={loading}
+          icon = {TbTrendingUp}
           onMovieClick={handleMovieClick}
         />
 
@@ -105,6 +108,7 @@ export default function Home() {
           title="Top Movies"
           movies={moviesTop}
           loading={loading}
+          icon = {TbArrowBigUpLine}
           onMovieClick={handleMovieClick}
         />
       </main>
