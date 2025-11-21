@@ -1,6 +1,9 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Controllers;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -52,5 +55,40 @@ public class MovieController {
 
         return response.body(); // retorna JSON do TMDb diretamente
     }
+
+    @GetMapping("/top")
+    public String topMovies() throws IOException, InterruptedException {
+        String url = "https://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey + "&page=1";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return response.body();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getMovieById(@PathVariable String id) throws IOException, InterruptedException {
+        String url = "https://api.themoviedb.org/3/movie/" +
+                URLEncoder.encode(id, StandardCharsets.UTF_8) +
+                "?api_key=" + apiKey;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return ResponseEntity
+                .status(response.statusCode())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(response.body());
+    }
+
 
 }

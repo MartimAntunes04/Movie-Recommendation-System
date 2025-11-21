@@ -7,7 +7,7 @@ import { FormEvent, useState,useEffect } from "react";
 import { searchMovies } from "@/Services/API";
 import { Movie } from "@/Services/API";
 import { useSearchParams } from "next/navigation";
-
+import { useRouter } from "next/navigation";
 
 export default function SearchContent(){
 
@@ -16,6 +16,7 @@ export default function SearchContent(){
   const query = searchParams.get("query") || "";
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
     
 
         useEffect(() => {
@@ -36,6 +37,11 @@ export default function SearchContent(){
         fetchMovies();
     }, [query]);
 
+
+     const handleMovieClick = (movie: Movie) => {
+        router.push(`/movies/${movie.id}`);
+     };
+
     return (
     <div className="min-h-screen bg-slate-900 text-white">
       <main className="container mx-auto px-4 py-8">
@@ -51,6 +57,7 @@ export default function SearchContent(){
               <li
                 key={m.id}
                 className="bg-slate-800 p-2 rounded-lg text-white hover:bg-slate-700 transition"
+                onClick={() => handleMovieClick(m)} 
               >
                 {m.poster_path ? (
                   <img

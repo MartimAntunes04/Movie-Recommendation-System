@@ -12,26 +12,41 @@ interface UserProfile {
 
 // Cache global
 let cachedProfile: UserProfile | null = null;
-let cacheTimestamp: number = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 min
+// Evento customizado para notificar atualizações do cache
+const PROFILE_UPDATE_EVENT = 'profileUpdated';
+
+// Função para disparar evento de atualização
+function notifyProfileUpdate() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(PROFILE_UPDATE_EVENT));
+  }
+}
 
 export function useUserProfile(token: string | null) {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(cachedProfile);
   const [loading, setLoading] = useState(!cachedProfile);
   const [error, setError] = useState<string | null>(null);
 
+  // Listener para atualizações do cache
   useEffect(() => {
+    const handleProfileUpdate = () => {
+      if (cachedProfile) {
+        setProfile(cachedProfile);
+        setLoading(false);
+      }
+    };
 
-     if (!token) return;
+    window.addEventListener(PROFILE_UPDATE_EVENT, handleProfileUpdate);
+    return () => {
+      window.removeEventListener(PROFILE_UPDATE_EVENT, handleProfileUpdate);
+    };
+  }, []);
 
-    // Verificar se o cache ainda é válido
-    const isCacheValid = 
-      cachedProfile && 
-      cacheTimestamp && 
-      Date.now() - cacheTimestamp < CACHE_DURATION;
+  useEffect(() => {
+    if (!token) return;
 
-    if (isCacheValid) {
-      // Usar cache válido
+    // Se há cache, usar diretamente (sem verificação de tempo)
+    if (cachedProfile) {
       setProfile(cachedProfile);
       setLoading(false);
       return;
@@ -58,9 +73,9 @@ export function useUserProfile(token: string | null) {
         
         // Atualizar cache global
         cachedProfile = data;
-        cacheTimestamp = Date.now();
         
         setProfile(data);
+        notifyProfileUpdate(); // Notificar outros componentes
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         setError(errorMessage);
@@ -89,9 +104,9 @@ export function useUserProfile(token: string | null) {
       if (!response.ok) throw new Error('Failed to fetch profile');
 
       const data = await response.json();
-      cachedProfile = data;
-      cacheTimestamp = Date.now();
+      cachedProfile = data; // Atualizar cache com novos dados
       setProfile(data);
+      notifyProfileUpdate(); // Notificar outros componentes (incluindo Navbar)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -101,7 +116,6 @@ export function useUserProfile(token: string | null) {
 
   const clearCache = () => {
     cachedProfile = null;
-    cacheTimestamp = 0;
     setProfile(null);
   };
 
@@ -124,5 +138,5 @@ export function getInitials(firstName?: string, lastName?: string): string {
 
 export function clearUserProfileCache() {
   cachedProfile = null;
-  cacheTimestamp = 0;
+  notifyProfileUpdate(); // Notificar quando o cache é limpo
 }
