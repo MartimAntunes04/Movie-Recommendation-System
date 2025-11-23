@@ -29,7 +29,7 @@ public class HistoryController {
         }
 
 
-        // Return JSON list
+        // Return JSON list to frontend
         return ResponseEntity.ok(historyList);
     }
 }
