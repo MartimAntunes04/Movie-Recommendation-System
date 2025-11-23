@@ -16,7 +16,7 @@ public class HistoryItem {
     @Column(name = "action_type", length = 512)
     private String actionType;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "movies_id", nullable = false)
     private Movie movie;
 
