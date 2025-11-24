@@ -3,6 +3,8 @@ package pt.uc.movierecommendation.movierecommendationsystem.Model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "history_items")
 public class HistoryItem {
@@ -16,10 +18,11 @@ public class HistoryItem {
     @Column(name = "action_type", length = 512)
     private String actionType;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "movies_id", nullable = false)
     private Movie movie;
-
+    
+    @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
     private User user;
