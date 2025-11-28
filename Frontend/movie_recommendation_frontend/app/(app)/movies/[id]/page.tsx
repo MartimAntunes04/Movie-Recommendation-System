@@ -81,7 +81,7 @@ export default function MovieDetailsPage() {
                   className={`cursor-pointer transition-colors duration-300 p-2 rounded-md hover:bg-slate-800 ${
                     wishlist ? "text-yellow-500" : "text-gray-400"
                   }`}
-                  aria-label={wishlist ? "Remover da biblioteca" : "Adicionar na biblioteca"}
+                  aria-label={wishlist ? "Remove from wishlist" : "Add to wishlist"}
                 >
                   {wishlist ? (
                     <TbLibraryMinus size={32} />
@@ -91,7 +91,7 @@ export default function MovieDetailsPage() {
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{wishlist ? "Remover da biblioteca" : "Adicionar na biblioteca"}</p>
+                <p>{wishlist ? "Remove from wishlist" : "Add to wishlist"}</p>
               </TooltipContent>
             </Tooltip>
           </div>
