@@ -8,6 +8,7 @@ import { Movie } from "@/Services/API";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { MovieCard } from "@/components/MovieCard";
+import { MovieCardSkeleton } from "@/components/MovieCardSkeleton";
 
 export default function SearchContent() {
   const searchParams = useSearchParams();
@@ -46,11 +47,10 @@ export default function SearchContent() {
         </h2>
 
         {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-slate-300 border-t-yellow-500 mb-4"></div>
-              <p className="text-slate-400">Carregando filmes...</p>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {Array.from({ length: 20 }).map((_, idx) => (
+              <MovieCardSkeleton key={idx} />
+            ))}
           </div>
         )}
 
