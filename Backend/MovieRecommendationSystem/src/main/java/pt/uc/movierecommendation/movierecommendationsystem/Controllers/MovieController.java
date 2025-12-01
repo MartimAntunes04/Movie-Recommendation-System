@@ -72,7 +72,8 @@ public class MovieController {
 		// Filter per director
 		if (director != null && !director.isBlank()) {
 			Integer directorId = findPersonId(director);
-			if (directorId != null) params.add("with_crew=" + directorId);
+            if (directorId == null) return "{}"; // director not found
+            params.add("with_crew=" + directorId);
 		}
 
 		if (params.isEmpty()) {
@@ -142,7 +143,7 @@ public class MovieController {
 
 
 	// Helper methods to find IDs
-	private Integer findPersonId(String name) throws IOException, InterruptedException {
+	public Integer findPersonId(String name) throws IOException, InterruptedException {
         String url = "https://api.themoviedb.org/3/search/person?api_key=" + apiKey +
                 "&query=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
 
@@ -152,10 +153,27 @@ public class MovieController {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-		// Getting the first result's id
-        JsonNode root = mapper.readTree(response.body()).path("results");
-        if (root.isArray() && root.size() > 0) return root.get(0).path("id").asInt();
-        return null;
+        if (response.statusCode() != 200) return null;
+
+        JsonNode results = mapper.readTree(response.body()).path("results");
+        if (!results.isArray() || results.size() == 0) return null;
+
+        // Exact name match
+        for (JsonNode person : results) {
+            if (person.path("name").asText().equalsIgnoreCase(name)) {
+                return person.path("id").asInt();
+            }
+        }
+        // Directing department with partial match
+        String query = name.toLowerCase();
+        for (JsonNode person : results) {
+            if ("Directing".equalsIgnoreCase(person.path("known_for_department").asText())
+                    && person.path("name").asText().toLowerCase().contains(query)) {
+                return person.path("id").asInt();
+            }
+        }
+        // Fallback to first (most popular)
+        return results.get(0).path("id").asInt();
     }
 
     private Integer findGenreId(String genreName) throws IOException, InterruptedException {

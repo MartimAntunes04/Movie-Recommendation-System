@@ -124,11 +124,13 @@ public class MovieControllerTest {
     @Test
     void testFilteredSearch_WithDirectorOnly() throws IOException, InterruptedException {
         // Calling filteredSearchMovies with only director provided
-        String result = movieController.filteredSearchMovies(null, null, null, null, "Nolan");
+        String result = movieController.filteredSearchMovies(null, null, null, null, "Robert Zemeckis");
 
         // Verifying the result and ensuring popularMovies was not called
         assertNotNull(result);
+        assertTrue(!result.equals("{}"), "O retorno não deve ser vazio");
         assertTrue(result.contains("{") || result.isEmpty(), "O retorno deve ser um JSON ou vazio");
+        verify(movieController, times(1)).findPersonId("Robert Zemeckis");
         verify(movieController, never()).popularMovies();
     }
 
