@@ -1,16 +1,6 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Controllers;
 
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
-
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,6 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class MovieControllerTest {
@@ -136,7 +135,7 @@ public class MovieControllerTest {
     @Test
     void testFilteredSearch_WithMultipleFilters() throws IOException, InterruptedException {
         // Calling filteredSearchMovies with multiple filters provided
-        String result = movieController.filteredSearchMovies(7.5, 9.0, 2010, "Action", "Nolan");
+        String result = movieController.filteredSearchMovies(7.5, 9.0, 2010, "Action", "Robert Zemeckis");
 
         // Verifying the result and ensuring popularMovies was not called
         assertNotNull(result);
