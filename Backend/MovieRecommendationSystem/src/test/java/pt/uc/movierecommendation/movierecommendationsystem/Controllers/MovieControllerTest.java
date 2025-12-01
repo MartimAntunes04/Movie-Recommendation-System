@@ -123,13 +123,16 @@ public class MovieControllerTest {
 
     @Test
     void testFilteredSearch_WithDirectorOnly() throws IOException, InterruptedException {
+        // Because apikey is fake, we need to mock findPersonId to return a valid director ID
+        Mockito.doReturn(24)
+                .when(movieController).findPersonId("Robert Zemeckis");
+
         // Calling filteredSearchMovies with only director provided
         String result = movieController.filteredSearchMovies(null, null, null, null, "Robert Zemeckis");
 
         // Verifying the result and ensuring popularMovies was not called
         assertNotNull(result);
-        assertTrue(!result.equals("error"), "O retorno não ser um erro na chamada da API");
-        assertTrue(!result.equals("{}"), "O retorno não deve ser vazio");
+        assertTrue(!result.equals("{}"), "O retorno não deve ser um JSON vazio vazio");
         assertTrue(result.contains("{") || result.isEmpty(), "O retorno deve ser um JSON ou vazio");
         verify(movieController, times(1)).findPersonId("Robert Zemeckis");
         verify(movieController, never()).popularMovies();
@@ -137,12 +140,18 @@ public class MovieControllerTest {
 
     @Test
     void testFilteredSearch_WithMultipleFilters() throws IOException, InterruptedException {
+        // Because apikey is fake, we need to mock findPersonId to return a valid director ID
+        Mockito.doReturn(24)
+                .when(movieController).findPersonId("Robert Zemeckis");
+                
         // Calling filteredSearchMovies with multiple filters provided
         String result = movieController.filteredSearchMovies(7.5, 9.0, 2010, "Action", "Robert Zemeckis");
 
         // Verifying the result and ensuring popularMovies was not called
         assertNotNull(result);
+        assertTrue(!result.equals("{}"), "O retorno não deve ser um JSON vazio vazio");
         assertTrue(result.contains("{") || result.isEmpty(), "O retorno deve ser um JSON ou vazio");
+        verify(movieController, times(1)).findPersonId("Robert Zemeckis");
         verify(movieController, never()).popularMovies();
     }
 }
