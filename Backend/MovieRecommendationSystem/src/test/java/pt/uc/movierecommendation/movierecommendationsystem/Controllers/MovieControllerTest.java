@@ -128,6 +128,7 @@ public class MovieControllerTest {
 
         // Verifying the result and ensuring popularMovies was not called
         assertNotNull(result);
+        assertTrue(!result.equals("error"), "O retorno não ser um erro na chamada da API");
         assertTrue(!result.equals("{}"), "O retorno não deve ser vazio");
         assertTrue(result.contains("{") || result.isEmpty(), "O retorno deve ser um JSON ou vazio");
         verify(movieController, times(1)).findPersonId("Robert Zemeckis");

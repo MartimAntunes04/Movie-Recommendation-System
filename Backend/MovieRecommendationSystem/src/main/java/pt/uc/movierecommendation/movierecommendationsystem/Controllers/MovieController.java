@@ -72,6 +72,7 @@ public class MovieController {
 		// Filter per director
 		if (director != null && !director.isBlank()) {
 			Integer directorId = findPersonId(director);
+            if (directorId == -1) return "error"; // error in API call
             if (directorId == null) return "{}"; // director not found
             params.add("with_crew=" + directorId);
 		}
@@ -153,7 +154,7 @@ public class MovieController {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() != 200) return null;
+        if (response.statusCode() != 200) return -1;
 
         JsonNode results = mapper.readTree(response.body()).path("results");
         if (!results.isArray() || results.size() == 0) return null;
