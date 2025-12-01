@@ -4,15 +4,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getMovieById, Movie } from "@/Services/API";
-import { TbStar,TbHeart } from "react-icons/tb";
+import { TbStar, TbLibraryPlus, TbLibraryMinus } from "react-icons/tb";
 import { Button } from "@/components/ui/button";
+import {Tooltip, TooltipContent, TooltipTrigger,} from "@/components/ui/tooltip";
 
 export default function MovieDetailsPage() {
   const params = useParams();
-  const id = params?.id as string;// captura o id da URL
+  const id = params?.id as string; // captura o id da URL
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
-  const [watched,setWatched] = useState(false);
+  const [watched, setWatched] = useState(false);
   const [wishlist, setWishlist] = useState(false);
 
   useEffect(() => {
@@ -20,7 +21,7 @@ export default function MovieDetailsPage() {
 
     const fetchMovie = async () => {
       try {
-        console.log
+        console.log;
         setLoading(true);
         const data = await getMovieById(id);
         setMovie(data);
@@ -58,8 +59,8 @@ export default function MovieDetailsPage() {
           <p className="text-sm text-slate-500 flex items-center gap-1">
             <strong>Rating:</strong>{" "}
             {movie.vote_average !== undefined && movie.vote_average !== null
-            ? movie.vote_average.toFixed(1)
-            : "N/A"}
+              ? movie.vote_average.toFixed(1)
+              : "N/A"}
             <TbStar className="text-white-400" />
           </p>
 
@@ -72,16 +73,27 @@ export default function MovieDetailsPage() {
               {watched ? "Watched" : "Mark as Watched"}
             </Button>
 
-            {/* Botão Wishlist */}
-            <TbHeart
-              onClick={() => setWishlist(!wishlist)}
-              className={`cursor-pointer transition-colors duration-300 ${
-                wishlist ? "text-red-600" : "text-gray-400"
-              }`}
-              size={32} // aumenta o tamanho
-              fill={wishlist ? "currentColor" : "none"} // coração cheio ou vazio
-              strokeWidth={2} // controla a espessura do contorno
-            />
+            {/* Botão Biblioteca com Tooltip */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setWishlist(!wishlist)}
+                  className={`cursor-pointer transition-colors duration-300 p-2 rounded-md hover:bg-slate-800 ${
+                    wishlist ? "text-yellow-500" : "text-gray-400"
+                  }`}
+                  aria-label={wishlist ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  {wishlist ? (
+                    <TbLibraryMinus size={32} />
+                  ) : (
+                    <TbLibraryPlus size={32} />
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{wishlist ? "Remove from wishlist" : "Add to wishlist"}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </div>

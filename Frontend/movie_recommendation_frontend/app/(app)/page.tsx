@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Movie, popularMovies, topRatedMovies } from "@/Services/API";
 import { MovieCarousel } from "@/components/MovieCarousel";
 import { useRouter } from "next/navigation";
+import { MovieCarouselSkeleton } from "@/components/MovieCarouselSkeleton";
 
 function MovieSection({
   title,
@@ -30,14 +31,9 @@ function MovieSection({
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-slate-300 border-t-yellow-500 mb-4"></div>
-            <p className="text-slate-400">Loading amazing movies...</p>
-          </div>
-        </div>
-      ) : movies.length > 0 ? (
-        <MovieCarousel movies={movies} onMovieClick={onMovieClick} />
+             <MovieCarouselSkeleton count={5} />
+            ) : movies.length > 0 ? (
+              <MovieCarousel movies={movies} onMovieClick={onMovieClick} />
       ) : (
         <div className="text-center py-20">
           <p className="text-slate-400">No movies found</p>
