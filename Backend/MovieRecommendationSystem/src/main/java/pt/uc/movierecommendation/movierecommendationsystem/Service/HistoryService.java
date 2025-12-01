@@ -8,9 +8,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
+import pt.uc.movierecommendation.movierecommendationsystem.Repository.MovieRepository;
+import pt.uc.movierecommendation.movierecommendationsystem.Model.Movie;
+import pt.uc.movierecommendation.movierecommendationsystem.Repository.GenreRepository;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class HistoryService {
@@ -18,10 +24,14 @@ public class HistoryService {
     
     private final HistoryItemRepository historyItemRepository;
     private final UserRepository userRepository;
+    private final MovieRepository movieRepository;
 
-    public HistoryService(HistoryItemRepository historyItemRepository, UserRepository userRepository) {
+    public HistoryService(HistoryItemRepository historyItemRepository, UserRepository userRepository, 
+        GenreRepository genreRepository,  MovieRepository movieRepository) {
+
         this.historyItemRepository = historyItemRepository;
         this.userRepository = userRepository;
+        this.movieRepository = movieRepository;
     }
 
     private String currentEmail() {
@@ -38,5 +48,16 @@ public class HistoryService {
 
         Long userId = optionalUser.get().getId();
         return historyItemRepository.findByUser_IdOrderByWatchedDateDesc(userId);
+    }
+
+    public boolean moviePresent(long id) {
+        if (movieRepository.findById(id).isPresent()) return true;
+        return false;
+    }
+
+    @Transactional
+    public Movie addMovie(Movie movie) {
+        if (movie == null) throw new NullPointerException();
+        return movieRepository.save(movie);
     }
 }
