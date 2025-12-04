@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HistoryItemRepository extends JpaRepository<HistoryItem, Long> {
     List<HistoryItem> findByUser_IdOrderByWatchedDateDesc(Long userId);
+    List<HistoryItem> findTop20ByUser_IdOrderByWatchedDateDesc(Long userId);
 }
