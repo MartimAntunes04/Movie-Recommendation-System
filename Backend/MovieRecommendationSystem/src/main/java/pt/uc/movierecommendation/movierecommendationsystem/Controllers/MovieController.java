@@ -120,7 +120,8 @@ public class MovieController {
 
     @GetMapping("/recommended")
     public ResponseEntity<?> getRecommendedMovies(
-        @RequestHeader(name = "Authorization", required = false) String authorization 
+        @RequestHeader(name = "Authorization", required = false) String authorization,
+        @RequestParam(name = "page", defaultValue = "1") int page
     ) {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header");
@@ -128,6 +129,8 @@ public class MovieController {
         String token = authorization.substring("Bearer ".length());
         Long userId = authService.getUserIdFromToken(token);
         if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+
+        if (page < 1) page = 1;
 
         try {
             List<String> likedTitles = new ArrayList<>();
@@ -189,6 +192,7 @@ public class MovieController {
             String url = base +
                     "?with_genres=" + withGenres +
                     "&sort_by=popularity.desc" +
+                    "&page=" + page +
                     "&api_key=" + apiKey;
 
             HttpClient client = HttpClient.newHttpClient();
