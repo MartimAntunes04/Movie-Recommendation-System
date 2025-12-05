@@ -12,11 +12,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Genre;
-import pt.uc.movierecommendation.movierecommendationsystem.Model.HistoryItem;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Movie;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Ratings;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.WatchListItem;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.HistoryItemRepository;
 import pt.uc.movierecommendation.movierecommendationsystem.Repository.RatingsRepository;
 import pt.uc.movierecommendation.movierecommendationsystem.Repository.WatchListItemRepository;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;

@@ -1,28 +1,21 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Controllers;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import pt.uc.movierecommendation.movierecommendationsystem.Model.Genre;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Movie;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.HistoryService;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.GenreRepository;
+import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;
+import pt.uc.movierecommendation.movierecommendationsystem.Service.MovieService;
+import pt.uc.movierecommendation.movierecommendationsystem.Service.ProfileService;
 
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDate;
 
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -35,92 +28,89 @@ public class HistoryController {
 
 
     private final HistoryService historyService;
-    private final GenreRepository genreRepository;
+    private final AuthService authService;
+    private final MovieService movieService;
 
-    public HistoryController(HistoryService historyService, GenreRepository genreRepository) {
+    public HistoryController(HistoryService historyService, AuthService authService, 
+        ProfileService profileService, MovieService movieService) {
         this.historyService = historyService;
-        this.genreRepository = genreRepository;
+        this.authService = authService;
+        this.movieService = movieService;
     }
 
     @GetMapping("/view")
-    public ResponseEntity<?> viewHistoryPage() {
+    public ResponseEntity<?> viewHistoryPage(
+        @RequestHeader(name = "Authorization", required = true) String authorization,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) throws IOException, InterruptedException {
+        //get current user's id
+        String token = authorization.substring("Bearer ".length());
+         Long authUserId = authService.getUserIdFromToken(token);
+        if (authUserId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
 
         // Get list of history items
-        var historyList = historyService.getCurrentUserHistory();
+        var historyList = historyService.getCurrentUserHistory(authUserId);
+        
 
         if (historyList.isEmpty()) {
         // Return a message if no movies in history
             return ResponseEntity.ok(Map.of("message", "No movies in your history."));
         }
 
-
+        int pagesMax = (historyList.size() + size - 1) / size;
+        int startIndex = Math.min(page * size, (pagesMax-1)*size);
+        int endIndex = Math.min((page + 1) * size, historyList.size());
         // Return JSON list to frontend
-        return ResponseEntity.ok(historyList);
+        return ResponseEntity.ok(Map.of(
+            "historyList", historyList.subList(startIndex, endIndex), 
+            "pages", ""+ page + "/"+ pagesMax));
     }
 
     @GetMapping("/add_remove/{id}")
-    public ResponseEntity<?> add_removeHistory(@PathVariable long id) throws IOException, InterruptedException {
-
-        String url = "https://api.themoviedb.org/3/movie/" + id +
-                      "?api_key=" + apiKey + "&language=en-US";
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("accept", "application/json")
-                .GET()
-                .build();
-
-        HttpResponse<String> response = 
-        client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode details = mapper.readTree(response.body());
-
-        //movie
-        Movie movie = new Movie();
-        movie.setId(id);
-
-        if (details.hasNonNull("title") && !details.get("title").asText().isEmpty()) {
-            movie.setTitle(details.get("title").asText());
-        } else movie.setTitle("No title found");
+    public ResponseEntity<?> add_removeHistory(
+        @RequestHeader(name = "Authorization", required = true) String authorization,
+        @RequestParam (required = true) long id 
+        ) throws IOException, InterruptedException {
+        //check if history item already exists
+        String token = authorization.substring("Bearer ".length());
+        long userId = authService.getUserIdFromToken(token);
         
-        if (details.hasNonNull("overview") && !details.get("overview").asText().isEmpty()) {
-            movie.setDescription(details.get("overview").asText());
-        } else movie.setDescription("No Description  found");
+        //yes -> remove it
+        if(historyService.remove(id, userId))  return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Removed from history"
+                ));
+
+        //no -> add it
+        Movie fetched = movieService.fetchOrCreateMovieById(id);
+        historyService.add(fetched, userId);
         
-        if (details.hasNonNull("vote_average")) {
-            movie.setAverageRating(details.get("vote_average").asDouble());        
-        }else movie.setAverageRating(5.0);
-
-        if (details.hasNonNull("release_date") && !details.get("release_date").asText().isEmpty()) {
-            movie.setReleaseDate(LocalDate.parse(details.get("release_date").asText()));
-        }
-
-        //genres 
-        Set<Genre> genreSet = new HashSet<>();
-
-        if (details.has("genres")) {
-            for (JsonNode g : details.get("genres")) {
-
-                String genreName = g.get("name").asText();
-
-                Genre genre = genreRepository.findByName(genreName)
-                        .orElseGet(() -> {
-                            Genre newGenre = new Genre();
-                            newGenre.setName(genreName);
-                            return genreRepository.save(newGenre);
-                        });
-
-                genreSet.add(genre);
-            }
-        }
-        movie.setGenres(genreSet);
-        historyService.addMovie(movie);
-
         return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", "Added to history"
+            ));
+
+    }
+
+    
+    @GetMapping("/checkHistory/{id}")
+    public ResponseEntity<?> checkHistory(
+        @RequestHeader(name = "Authorization", required = true) String authorization,
+        @RequestParam (required = true) long id 
+        ) throws IOException, InterruptedException {
+        //check if history item already exists
+        String token = authorization.substring("Bearer ".length());
+        long userId = authService.getUserIdFromToken(token);
+        
+        if(historyService.check(id, userId))  return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Movie in user's history"
+                ));
+
+        return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Not in user's history"
             ));
 
     }

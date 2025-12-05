@@ -24,7 +24,7 @@ public class WatchlistController {
 
     @GetMapping
     public ResponseEntity<?> getWatchlist(
-        @RequestHeader(name = "Authorization", required = false) String authorization,
+        @RequestHeader(name = "Authorization", required = true) String authorization,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
