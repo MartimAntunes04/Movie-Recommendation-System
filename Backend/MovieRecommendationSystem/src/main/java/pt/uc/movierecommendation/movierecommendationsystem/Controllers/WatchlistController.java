@@ -61,9 +61,10 @@ public class WatchlistController {
 
         try {
             watchlistService.add(authUserId, movieId);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of("success", true, "message", "Movie added to watchlist"));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("success", false, "message", e.getMessage()));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
@@ -85,11 +86,15 @@ public class WatchlistController {
 
         try {
             watchlistService.remove(authUserId, movieId);
-            return ResponseEntity.noContent().build();    // return 204 status code
+            return ResponseEntity.ok(
+                    Map.of("success", true, "message", "Movie removed from watchlist")
+            );
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("success", false, "message", "Movie not found"));
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 }
