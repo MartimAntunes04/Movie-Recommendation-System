@@ -137,7 +137,9 @@ class WatchlistControllerTest {
 
         mockMvc.perform(post("/watchlist/550")
                         .header("Authorization", "Bearer tok"))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Movie added to watchlist"));
 
         verify(authService).getUserIdFromToken("tok");
         verify(watchlistService).add(7L, 550L);
@@ -151,7 +153,8 @@ class WatchlistControllerTest {
         mockMvc.perform(post("/watchlist/550")
                         .header("Authorization", "Bearer tok"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Movie not found"));
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Movie not found"));
 
         verify(watchlistService).add(7L, 550L);
     }
@@ -200,7 +203,9 @@ class WatchlistControllerTest {
 
         mockMvc.perform(delete("/watchlist/550")
                         .header("Authorization", "Bearer tok"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Movie removed from watchlist"));
 
         verify(authService).getUserIdFromToken("tok");
         verify(watchlistService).remove(7L, 550L);
@@ -214,7 +219,8 @@ class WatchlistControllerTest {
         mockMvc.perform(delete("/watchlist/550")
                         .header("Authorization", "Bearer tok"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Movie not found"));
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Movie not found"));
 
         verify(watchlistService).remove(7L, 550L);
     }
@@ -227,7 +233,8 @@ class WatchlistControllerTest {
         mockMvc.perform(delete("/watchlist/550")
                         .header("Authorization", "Bearer tok"))
                 .andExpect(status().isConflict())
-                .andExpect(content().string("Movie not in watchlist"));
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Movie not in watchlist"));
 
         verify(watchlistService).remove(7L, 550L);
     }

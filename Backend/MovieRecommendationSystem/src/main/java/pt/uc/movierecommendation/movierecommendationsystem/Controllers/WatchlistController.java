@@ -61,8 +61,9 @@ public class WatchlistController {
 
         try {
             watchlistService.add(authUserId, movieId);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(Map.of("success", true, "message", "Movie added to watchlist"));
+            return ResponseEntity.ok(
+                    Map.of("success", true, "message", "Movie added to watchlist")
+            );
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("success", false, "message", e.getMessage()));
         } catch (IllegalStateException e) {
