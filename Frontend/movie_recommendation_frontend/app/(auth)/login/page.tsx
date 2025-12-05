@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle,  CardDescription } from "@/components/ui/card";	
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";	
 import { TbEye, TbEyeOff, TbMovie } from 'react-icons/tb';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ export default function Login() {
 
    const data = await apiLogin(email, password);
    if(data.success){
-      login(data.token); // Usa o context ao invés de localStorage direto
+      login(data.token);
    } else {
       setStatus("error");
       setMessage(data.message || "Email ou password incorretos!");
@@ -30,9 +30,9 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center ">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md space-y-8 p-8">
-        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm dark:bg-slate-800/80">
+        <Card className="shadow-xl border-0 bg-slate-800/80 backdrop-blur-sm">
           <CardHeader className="space-y-2 text-center">
           <div className="flex items-center justify-center gap-3 text-yellow-500 mb-4">
             <TbMovie className="text-4xl" />
@@ -40,10 +40,10 @@ export default function Login() {
               MovieRec
             </span>
           </div>
-            <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
+            <CardTitle className="text-2xl font-bold text-white">
               Welcome back!
             </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-400">
+            <CardDescription className="text-slate-400">
               Login to your account
             </CardDescription>
           </CardHeader>
@@ -71,7 +71,7 @@ export default function Login() {
                 placeholder="********" className="pr-10" 
                 required 
                 />
-                <Button type="button" variant="ghost" className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-yellow-400  group-hover:text-yellow-500 transition-all duration-500 hover:cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
+                <Button type="button" variant="ghost" className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-yellow-400 group-hover:text-yellow-500 transition-all duration-500 hover:cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? <TbEyeOff className="size-4" /> : <TbEye className="size-4" />}
               </Button>
               </div>
@@ -89,7 +89,7 @@ export default function Login() {
           </p>
         )}
           </form>
-          <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-center text-sm text-slate-400">
               Don't have an account? {" "}
               <Button variant="link" className="text-blue-600 hover:cursor-pointer hover:text-blue-700 p-0 h-auto font-medium">
                 <Link href="/register">Register</Link>

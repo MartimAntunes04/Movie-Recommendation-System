@@ -36,6 +36,14 @@ export type Movie = {
   popularity: number;
 };
 
+export type FilteredSearchParams = {
+  ratingMin?: number;
+  ratingMax?: number;
+  year?: number;
+  genre?: string;
+  director?: string;
+};
+
 function setToken(token: string) {
   if (typeof window !== 'undefined') localStorage.setItem(TOKEN_KEY, token);
 }
@@ -186,6 +194,39 @@ export async function topRatedMovies(): Promise<{ results: Movie[] }> {
     return data;
   } catch (error) {
     console.error("Erro na requisição topRatedMovies:", error);
+    throw error;
+  }
+}
+
+export async function filteredSearch(
+  params: FilteredSearchParams
+): Promise<{ results: Movie[] }> {
+  try {
+    const queryParams = new URLSearchParams();
+    
+    if (params.ratingMin !== undefined) queryParams.append('ratingMin', params.ratingMin.toString());
+    if (params.ratingMax !== undefined) queryParams.append('ratingMax', params.ratingMax.toString());
+    if (params.year !== undefined) queryParams.append('year', params.year.toString());
+    if (params.genre) queryParams.append('genre', params.genre);
+    if (params.director) queryParams.append('director', params.director);
+
+    const response = await fetch(
+      `${API_URL}/movies/filtered_search?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      handleUnauthorized(response);
+      throw new Error(`Erro ao buscar filmes filtrados: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Erro na requisição filteredSearch:", error);
     throw error;
   }
 }
