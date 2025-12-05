@@ -67,7 +67,7 @@ public class HistoryController {
             "pages", ""+ page + "/"+ pagesMax));
     }
 
-    @GetMapping("/add_remove/{id}")
+    @GetMapping("/add_remove")
     public ResponseEntity<?> add_removeHistory(
         @RequestHeader(name = "Authorization", required = true) String authorization,
         @RequestParam (required = true) long id 
