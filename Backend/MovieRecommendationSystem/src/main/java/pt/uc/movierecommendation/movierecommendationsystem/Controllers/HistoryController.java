@@ -67,7 +67,7 @@ public class HistoryController {
             "pages", ""+ page + "/"+ pagesMax));
     }
 
-    @GetMapping("/add_remove")
+    @PostMapping("/add_remove")
     public ResponseEntity<?> add_removeHistory(
         @RequestHeader(name = "Authorization", required = true) String authorization,
         @RequestParam (required = true) long id 
@@ -94,7 +94,7 @@ public class HistoryController {
     }
 
     
-    @GetMapping("/checkHistory/{id}")
+    @GetMapping("/checkHistory")
     public ResponseEntity<?> checkHistory(
         @RequestHeader(name = "Authorization", required = true) String authorization,
         @RequestParam (required = true) long id 
