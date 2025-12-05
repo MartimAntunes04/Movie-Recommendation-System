@@ -44,4 +44,11 @@ public class AuthService {
         userRepository.save(user);
         return true;
     }
+
+    public Long getUserIdFromToken(String token) {
+        String email = jwtService.extractEmail(token);
+        return userRepository.findByEmail(email)
+                .map(User::getId)
+                .orElse(null);
+    }
 }
