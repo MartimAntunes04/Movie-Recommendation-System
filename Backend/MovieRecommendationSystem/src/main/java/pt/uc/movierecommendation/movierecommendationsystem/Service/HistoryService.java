@@ -27,7 +27,7 @@ public class HistoryService {
     }
 
     public List<HistoryItem> getCurrentUserHistory(long userId) {   
-        return historyItemRepository.findByUser_IdOrderByWatchedDateDesc(userId);
+        return historyItemRepository.findByUser_Id(userId);
     }
 
     public boolean check(long movieId, long userId) {
