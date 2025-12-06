@@ -334,12 +334,26 @@ export async function removeFromWatchlist(movieId: number) {
 
 export async function isMovieInWatchlist(movieId: number): Promise<boolean> {
   try {
-    const watchlist = await getWatchlist();
-    return watchlist.some((movie: Movie) => movie.id === movieId);
+    const response = await fetch(`${API_URL}/watchlist/checkWatchlist/${movieId}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      console.error("Erro no servidor ao verificar watchlist.");
+      return false;
+    }
+
+    const data = await response.json();
+
+    // O backend devolve: { success: true/false, message: "..." }
+    return data.success === true;
+    
   } catch (err) {
     console.error('Erro em isMovieInWatchlist:', err);
     return false;
   }
 }
+
 
 

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class WatchlistService {
@@ -32,6 +33,12 @@ public class WatchlistService {
         this.watchListItemRepository = watchListItemRepository;
         this.userRepository = userRepository;
         this.movieService = movieService;
+    }
+
+    public boolean check(long movieId, long userId) {
+       Optional<WatchListItem> item = watchListItemRepository.findByUser_IdAndMovie_Id(userId, movieId);
+        if (item == null || item.isEmpty()) return false;
+        return true;
     }
 
     @Transactional(readOnly = true)
