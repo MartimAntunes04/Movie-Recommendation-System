@@ -51,6 +51,8 @@ public class MovieService {
 
         Movie movie = new Movie();
         movie.setId(movieId);
+        // store TMDb id explicitly
+        movie.setTmdbId(movieId);
         movie.setTitle(details.path("title").asText(null));
         movie.setDescription(details.path("overview").asText(null));
         String date = details.path("release_date").asText(null);
@@ -76,6 +78,9 @@ public class MovieService {
                 .map(name -> name.path("name").asText())
                 .collect(Collectors.joining(", "));
         movie.setCastMembers(cast);
+
+        // store poster path from TMDb
+        movie.setPosterPath(details.path("poster_path").asText(null));
 
         return movieRepository.save(movie);
     }
