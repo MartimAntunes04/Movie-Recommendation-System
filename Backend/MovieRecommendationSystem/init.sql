@@ -1,0 +1,14 @@
+-- CREATE TABLE IF NOT EXISTS users (
+--     id SERIAL PRIMARY KEY,
+--     email VARCHAR(255) UNIQUE NOT NULL,
+--     first_name VARCHAR(50),
+--     last_name VARCHAR(50),
+--     username VARCHAR(50),
+--     password VARCHAR(255)
+-- );
+
+-- -- Inserir usuários de teste
+-- INSERT INTO users (email, first_name, last_name, username, password) VALUES
+-- ('luis@gmail.com', 'Luis', 'Silva', 'luis123', '123456'),
+-- ('ana@gmail.com', 'Ana', 'Costa', 'ana2025', '1234'),
+-- ('joao@gmail.com', 'João', 'Pereira', 'joaop', '123');
