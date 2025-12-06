@@ -1,28 +1,20 @@
 "use client";
-import { TbTrendingUp, TbArrowBigUpLine, TbFilter, TbSparkles, TbX } from 'react-icons/tb';
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Movie, popularMovies, topRatedMovies, filteredSearch, FilteredSearchParams } from "@/Services/API";
-import { MovieCarousel } from "@/components/MovieCarousel";
-import { useRouter } from "next/navigation";
-import { MovieCarouselSkeleton } from "@/components/MovieCarouselSkeleton";
 
-// shadcn components
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { TbArrowLeft, TbFilter, TbSparkles, TbX } from "react-icons/tb";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { MovieCard } from "@/components/MovieCard";
+import { MovieCardSkeleton } from "@/components/MovieCardSkeleton";
+import { filteredSearch, FilteredSearchParams, Movie } from "@/Services/API";
 
 const GENRES = [
   "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary",
@@ -30,55 +22,148 @@ const GENRES = [
   "Romance", "Science Fiction", "Thriller", "War", "Western"
 ];
 
-function MovieSection({
-  title,
-  movies,
-  loading,
-  onMovieClick,
-  icon: Icon,
-  seeMoreUrl,
-  seeMoreLabel = "See more",
-}: {
-  title: string;
-  movies: Movie[];
-  loading: boolean;
-  onMovieClick: (movie: Movie) => void;
-  icon: React.ComponentType<{ className?: string }>;
-  seeMoreUrl?: string;
-  seeMoreLabel?: string;
-}) {
+function parseFilters(params: URLSearchParams): FilteredSearchParams {
+  const filters: FilteredSearchParams = {};
+
+  const ratingMin = params.get("ratingMin");
+  const ratingMax = params.get("ratingMax");
+  const year = params.get("year");
+  const genre = params.get("genre");
+  const director = params.get("director");
+
+  if (ratingMin) filters.ratingMin = Number(ratingMin);
+  if (ratingMax) filters.ratingMax = Number(ratingMax);
+  if (year) filters.year = Number(year);
+  if (genre) filters.genre = genre;
+  if (director) filters.director = director;
+
+  return filters;
+}
+
+export default function DiscoverPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const filters = useMemo(
+    () => parseFilters(new URLSearchParams(searchParams.toString())),
+    [searchParams]
+  );
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      setLoading(true);
+      try {
+        const data = await filteredSearch(filters);
+        setMovies(data.results || []);
+      } catch (err) {
+        console.error(err);
+        setMovies([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, [filters]);
+
+  const handleMovieClick = (movie: Movie) => router.push(`/movies/${movie.id}`);
+  const hasFilters = Object.keys(filters).length > 0;
+
+  const buildDiscoverUrl = (newFilters: FilteredSearchParams) => {
+    const params = new URLSearchParams();
+    if (newFilters.ratingMin !== undefined) params.set("ratingMin", newFilters.ratingMin.toString());
+    if (newFilters.ratingMax !== undefined) params.set("ratingMax", newFilters.ratingMax.toString());
+    if (newFilters.year !== undefined) params.set("year", newFilters.year.toString());
+    if (newFilters.genre) params.set("genre", newFilters.genre);
+    if (newFilters.director) params.set("director", newFilters.director);
+
+    const query = params.toString();
+    return query ? `/discover?${query}` : "/discover";
+  };
+
+  const handleApplyFilters = (newFilters: FilteredSearchParams) => {
+    if (newFilters.genre === "all") {
+      delete newFilters.genre;
+    }
+    router.push(buildDiscoverUrl(newFilters));
+  };
+
   return (
-    <div className="mb-12">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <Icon className="text-3xl text-yellow-500" />
-          <h2 className="text-3xl font-bold text-white">
-            {title}
-          </h2>
+    <div className="min-h-screen bg-slate-900 text-white">
+      <main className="container mx-auto px-4 py-8 space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <TbSparkles className="text-3xl text-yellow-500" />
+            <div>
+              <h1 className="text-3xl font-bold">Discover</h1>
+              <p className="text-slate-400 text-sm">
+                {hasFilters
+                  ? "Todos os filmes com os filtros aplicados"
+                  : "Todos os filmes populares"}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {hasFilters && (
+              <Button
+                variant="ghost"
+                onClick={() => router.push("/discover")}
+                className="text-slate-300 hover:text-white hover:bg-slate-800 border-slate-700"
+              >
+                Limpar filtros
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              onClick={() => router.push("/")}
+              className="text-slate-300 border-slate-700 hover:border-yellow-500 hover:text-white"
+            >
+              <TbArrowLeft className="mr-2" />
+              Voltar
+            </Button>
+          </div>
         </div>
 
-        {seeMoreUrl && (
-          <Button
-            asChild
-            variant="ghost"
-            className="self-start sm:self-auto text-yellow-400 hover:text-white hover:bg-yellow-500/10 border-yellow-500/20"
-          >
-            <Link href={seeMoreUrl}>
-              {seeMoreLabel}
-            </Link>
-          </Button>
+        <DiscoverPanel
+          onApplyFilters={handleApplyFilters}
+          loading={loading}
+          activeFilters={filters}
+        />
+
+        <Separator className="bg-slate-800" />
+
+        {loading && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {Array.from({ length: 20 }).map((_, idx) => (
+              <MovieCardSkeleton key={idx} />
+            ))}
+          </div>
         )}
-      </div>
 
-      {loading ? (
-        <MovieCarouselSkeleton count={5} />
-      ) : movies.length > 0 ? (
-        <MovieCarousel movies={movies} onMovieClick={onMovieClick} />
-      ) : (
-        <div className="text-center py-20">
-          <p className="text-slate-400">No movies found</p>
-        </div>
-      )}
+        {!loading && movies.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {movies.map((movie) => (
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                size="small"
+                showOverlay
+                onClick={() => handleMovieClick(movie)}
+              />
+            ))}
+          </div>
+        )}
+
+        {!loading && movies.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-slate-400 text-lg">
+              No movies found for this filters.
+            </p>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
@@ -97,6 +182,16 @@ function DiscoverPanel({
   const [year, setYear] = useState<string>("");
   const [genre, setGenre] = useState<string>("");
   const [director, setDirector] = useState<string>("");
+
+  useEffect(() => {
+    setRatingRange([
+      activeFilters.ratingMin ?? 0,
+      activeFilters.ratingMax ?? 10,
+    ]);
+    setYear(activeFilters.year ? activeFilters.year.toString() : "");
+    setGenre(activeFilters.genre ?? "");
+    setDirector(activeFilters.director ?? "");
+  }, [activeFilters]);
 
   const activeFilterCount = Object.keys(activeFilters).length;
 
@@ -121,14 +216,14 @@ function DiscoverPanel({
   const hasAnyFilter = ratingRange[0] > 0 || ratingRange[1] < 10 || year || genre || director;
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mb-8">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mb-6">
       <div className="flex justify-center">
         <CollapsibleTrigger asChild>
           <Button
             variant={isOpen ? "default" : "outline"}
             className={`gap-2 rounded-full px-6 transition-all duration-300 ${
-              isOpen 
-                ? "bg-linear-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-transparent shadow-lg shadow-yellow-500/25" 
+              isOpen
+                ? "bg-linear-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-transparent shadow-lg shadow-yellow-500/25"
                 : "border-slate-700 hover:border-yellow-500"
             }`}
           >
@@ -146,7 +241,6 @@ function DiscoverPanel({
       <CollapsibleContent className="mt-6 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 duration-300">
         <Card className="border-slate-700 bg-slate-800/50 backdrop-blur-md shadow-sm">
           <CardContent className="pt-6">
-            {/* Active Filters Badges */}
             {activeFilterCount > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
                 {activeFilters.ratingMin !== undefined && (
@@ -187,7 +281,6 @@ function DiscoverPanel({
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Rating Slider */}
               <div className="space-y-4 lg:col-span-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-slate-400">Rating Range</Label>
@@ -201,11 +294,10 @@ function DiscoverPanel({
                   min={0}
                   max={10}
                   step={0.5}
-                  className="[&_[data-slot=slider-track]]:bg-slate-700 [&_[data-slot=slider-range]]:bg-linear-to-r [&_[data-slot=slider-range]]:from-yellow-500 [&_[data-slot=slider-range]]:to-orange-500 [&_[data-slot=slider-thumb]]:border-yellow-500 [&_[data-slot=slider-thumb]]:shadow-lg"
+                  className="**:data-[slot=slider-track]:bg-slate-700 **:data-[slot=slider-range]:bg-linear-to-r **:data-[slot=slider-range]:from-yellow-500 **:data-[slot=slider-range]:to-orange-500 **:data-[slot=slider-thumb]:border-yellow-500 **:data-[slot=slider-thumb]:shadow-lg"
                 />
               </div>
 
-              {/* Year Input */}
               <div className="space-y-2">
                 <Label htmlFor="year" className="text-slate-400">
                   Release Year
@@ -222,7 +314,6 @@ function DiscoverPanel({
                 />
               </div>
 
-              {/* Director Input */}
               <div className="space-y-2">
                 <Label htmlFor="director" className="text-slate-400">
                   Director
@@ -238,31 +329,29 @@ function DiscoverPanel({
               </div>
             </div>
 
-            {/* Genre Select - full width */}
             <div className="mt-6 space-y-2">
               <Label className="text-slate-400">Genre</Label>
-              <Select value={genre} onValueChange={setGenre}>
-                <SelectTrigger className="w-full md:w-64 border-slate-700 bg-slate-900/50">
-                  <SelectValue placeholder="All Genres" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700">
-                  <SelectItem value="all">All Genres</SelectItem>
-                  {GENRES.map((g) => (
-                    <SelectItem key={g} value={g}>
-                      {g}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <select
+                value={genre}
+                onChange={(e) => setGenre(e.target.value)}
+                className="w-full md:w-64 border-slate-700 bg-slate-900/50 text-white rounded-md px-3 py-2"
+              >
+                <option value="">All Genres</option>
+                <option value="all">All Genres</option>
+                {GENRES.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <Separator className="my-6 bg-slate-700" />
 
-            {/* Action Buttons */}
             <div className="flex justify-end gap-3">
-              <Button 
-                variant="ghost" 
-                onClick={handleClear} 
+              <Button
+                variant="ghost"
+                onClick={handleClear}
                 disabled={!hasAnyFilter}
                 className="text-slate-400 hover:text-white hover:bg-slate-700"
               >
@@ -293,129 +382,3 @@ function DiscoverPanel({
   );
 }
 
-export default function Home() {
-  const router = useRouter();
-  const [moviesPop, setMoviesPop] = useState<Movie[]>([]);
-  const [moviesTop, setMoviesTop] = useState<Movie[]>([]);
-  const [moviesFiltered, setMoviesFiltered] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [filterLoading, setFilterLoading] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<FilteredSearchParams>({});
-
-  useEffect(() => {
-    const fetchMovies = async () => {
-      setLoading(true);
-      try {
-        const pop = await popularMovies();
-        setMoviesPop(pop.results || []);
-        const top = await topRatedMovies();
-        setMoviesTop(top.results || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovies();
-  }, []);
-
-  const handleMovieClick = (movie: Movie) => {
-    router.push(`/movies/${movie.id}`);
-  };
-
-  const handleApplyFilters = async (filters: FilteredSearchParams) => {
-    if (filters.genre === "all") {
-      delete filters.genre;
-    }
-
-    setActiveFilters(filters);
-    const hasFilters = Object.keys(filters).length > 0;
-
-    if (!hasFilters) {
-      setMoviesFiltered([]);
-      return;
-    }
-
-    setFilterLoading(true);
-    try {
-      const result = await filteredSearch(filters);
-      setMoviesFiltered(result.results || []);
-    } catch (err) {
-      console.error(err);
-      setMoviesFiltered([]);
-    } finally {
-      setFilterLoading(false);
-    }
-  };
-
-  const buildDiscoverUrl = (filters: FilteredSearchParams) => {
-    const params = new URLSearchParams();
-    if (filters.ratingMin !== undefined) params.set("ratingMin", filters.ratingMin.toString());
-    if (filters.ratingMax !== undefined) params.set("ratingMax", filters.ratingMax.toString());
-    if (filters.year !== undefined) params.set("year", filters.year.toString());
-    if (filters.genre) params.set("genre", filters.genre);
-    if (filters.director) params.set("director", filters.director);
-
-    const query = params.toString();
-    return query ? `/discover?${query}` : "/discover";
-  };
-
-  const hasActiveFilters = Object.keys(activeFilters).length > 0;
-
-  return (
-    <div className="min-h-screen">
-      <main className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Discover the{" "}
-            <span className="bg-linear-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-              best movies
-            </span>
-          </h1>
-          <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
-            Find your next favorite film in seconds.
-          </p>
-        </div>
-
-        {/* Discover Panel */}
-        <DiscoverPanel
-          onApplyFilters={handleApplyFilters}
-          loading={filterLoading}
-          activeFilters={activeFilters}
-        />
-
-        {/* Filtered Results Section */}
-        {hasActiveFilters && (
-          <MovieSection
-            title="Discover Results"
-            movies={moviesFiltered}
-            loading={filterLoading}
-            icon={TbSparkles}
-            onMovieClick={handleMovieClick}
-            seeMoreUrl={buildDiscoverUrl(activeFilters)}
-          />
-        )}
-
-        {/* Popular Movies Section */}
-        <MovieSection
-          title="Popular Movies"
-          movies={moviesPop}
-          loading={loading}
-          icon={TbTrendingUp}
-          onMovieClick={handleMovieClick}
-        />
-
-        {/* Top Movies Section */}
-        <MovieSection
-          title="Top Movies"
-          movies={moviesTop}
-          loading={loading}
-          icon={TbArrowBigUpLine}
-          onMovieClick={handleMovieClick}
-        />
-      </main>
-    </div>
-  );
-}

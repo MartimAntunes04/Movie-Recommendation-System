@@ -17,7 +17,7 @@ default:
     paths:
       - .m2/repository
       - Frontend/movie_recommendation_frontend/node_modules
-  
+
 # ---------- Validate ----------
 frontend-validate:
   stage: validate
@@ -28,9 +28,9 @@ frontend-validate:
     - npm run lint || true
     - npm run type-check || true
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'   # run on MRs
-    - if: '$CI_COMMIT_BRANCH == "main"'                    # run on main
-    - changes: [ "Frontend/**/*" ]
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # run on MRs
+    - if: '$CI_COMMIT_BRANCH == "main"' # run on main
+    - changes: ["Frontend/**/*"]
 
 backend-validate:
   stage: validate
@@ -42,9 +42,9 @@ backend-validate:
     when: on_success
     expire_in: 1 day
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'   # run on MRs
-    - if: '$CI_COMMIT_BRANCH == "main"'                    # run on main
-    - changes: [ "Backend/**/*" ]
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # run on MRs
+    - if: '$CI_COMMIT_BRANCH == "main"' # run on main
+    - changes: ["Backend/**/*"]
 
 # ---------- Tests ----------
 frontend-test:
@@ -55,10 +55,10 @@ frontend-test:
     - npm ci
     - npm test || echo "no tests"
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'   # run on MRs
-    - if: '$CI_COMMIT_BRANCH == "main"'                    # run on main
-    - changes: [ "Frontend/**/*" ]
-      
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # run on MRs
+    - if: '$CI_COMMIT_BRANCH == "main"' # run on main
+    - changes: ["Frontend/**/*"]
+
 backend-test:
   stage: test
   image: maven:3.9.6-eclipse-temurin-17
@@ -74,9 +74,9 @@ backend-test:
       - Backend/MovieRecommendationSystem/target/site/jacoco/*.xml
     expire_in: 7 days
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'   # run on MRs
-    - if: '$CI_COMMIT_BRANCH == "main"'                    # run on main
-    - changes: [ "Backend/**/*" ]
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # run on MRs
+    - if: '$CI_COMMIT_BRANCH == "main"' # run on main
+    - changes: ["Backend/**/*"]
 
 # ---------- Build artifacts ----------
 backend-build:
@@ -91,9 +91,9 @@ backend-build:
       - Backend/MovieRecommendationSystem/target/*.jar
     expire_in: 7 days
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'   # run on MRs
-    - if: '$CI_COMMIT_BRANCH == "main"'                    # run on main
-    - changes: [ "Backend/**/*" ]
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # run on MRs
+    - if: '$CI_COMMIT_BRANCH == "main"' # run on main
+    - changes: ["Backend/**/*"]
 
 frontend-build:
   stage: build
@@ -108,9 +108,9 @@ frontend-build:
       - Frontend/movie_recommendation_frontend/.next
     expire_in: 7 days
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'   # run on MRs
-    - if: '$CI_COMMIT_BRANCH == "main"'                    # run on main
-    - changes: [ "Frontend/**/*" ]
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # run on MRs
+    - if: '$CI_COMMIT_BRANCH == "main"' # run on main
+    - changes: ["Frontend/**/*"]
 
 # ---------- Package Docker images ----------
 docker-build:
