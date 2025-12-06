@@ -14,8 +14,8 @@ export default function MovieDetailsPage() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [watched, setWatched] = useState(false);
-  const [wishlist, setWishlist] = useState(false);
-  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [watchlist, setWatchlist] = useState(false);
+  const [watchlistLoading, setWatchlistLoading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -29,7 +29,7 @@ export default function MovieDetailsPage() {
         
         // Check if movie is already in watchlist
         const inWatchlist = await isMovieInWatchlist(Number(id));
-        setWishlist(inWatchlist);
+        setWatchlist(inWatchlist);
       } catch (err) {
         console.error("Erro ao buscar filme:", err);
       } finally {
@@ -84,30 +84,30 @@ export default function MovieDetailsPage() {
                 <button
                   onClick={async () => {
                     if (!movie) return;
-                    setWishlistLoading(true);
+                    setWatchlistLoading(true);
                     try {
-                      if (!wishlist) {
+                      if (!watchlist) {
                         await addToWatchlist(movie.id);
-                        setWishlist(true);
+                        setWatchlist(true);
                       } else {
                         await removeFromWatchlist(movie.id);
-                        setWishlist(false);
+                        setWatchlist(false);
                       }
                     } catch (err) {
                       console.error('Erro ao atualizar watchlist:', err);
                     } finally {
-                      setWishlistLoading(false);
+                      setWatchlistLoading(false);
                     }
                   }}
                   className={`cursor-pointer transition-colors duration-300 p-2 rounded-md hover:bg-slate-800 ${
-                    wishlist ? "text-yellow-500" : "text-gray-400"
+                    watchlist ? "text-yellow-500" : "text-gray-400"
                   }`}
-                  aria-label={wishlist ? "Remove from wishlist" : "Add to wishlist"}
-                  disabled={wishlistLoading}
+                  aria-label={watchlist ? "Remove from watchlist" : "Add to watchlist"}
+                  disabled={watchlistLoading}
                 >
-                  {wishlistLoading ? (
+                  {watchlistLoading ? (
                     <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-slate-400 border-t-yellow-500"></div>
-                  ) : wishlist ? (
+                  ) : watchlist ? (
                     <TbLibraryMinus size={32} />
                   ) : (
                     <TbLibraryPlus size={32} />
@@ -115,7 +115,7 @@ export default function MovieDetailsPage() {
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{wishlist ? "Remove from wishlist" : "Add to wishlist"}</p>
+                <p>{watchlist? "Remove from watchlist" : "Add to watchlist"}</p>
               </TooltipContent>
             </Tooltip>
           </div>

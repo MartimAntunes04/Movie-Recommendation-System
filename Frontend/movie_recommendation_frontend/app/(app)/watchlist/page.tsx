@@ -62,7 +62,7 @@ export default function WatchlistPage() {
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-slate-300 border-t-yellow-500 mb-4"></div>
-          <p className="text-slate-400">Carregando watchlist...</p>
+          <p className="text-slate-400">Loading watchlist...</p>
         </div>
       </div>
     );
@@ -73,7 +73,7 @@ export default function WatchlistPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="max-w-6xl mx-auto px-4">
-        <h1 className="text-2xl font-bold text-white mb-4">Minha Watchlist</h1>
+        <h1 className="text-2xl font-bold text-white mb-4">My Watchlist</h1>
 
         {error && (
           <div className="mb-4 text-red-400">{error}</div>
@@ -82,8 +82,8 @@ export default function WatchlistPage() {
         {!watchlist || watchlist.length === 0 ? (
           <Card className="p-6 bg-white/5">
             <CardContent>
-              <p className="text-slate-300 mb-4">A sua watchlist está vazia.</p>
-              <Link href="/" className="text-yellow-400 underline">Explorar filmes</Link>
+              <p className="text-slate-300 mb-4">Your watchlist is empty.</p>
+              <Link href="/" className="text-yellow-400 underline">Explore films</Link>
             </CardContent>
           </Card>
         ) : (
