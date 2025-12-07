@@ -40,9 +40,11 @@ public class MovieService {
             throw new IllegalArgumentException("Invalid movieId");
         }
         
+        //Search Database
         Optional<Movie> existing = movieRepository.findById(movieId);
         if (existing.isPresent()) return existing.get();
 
+        //Otherwise fetch from API
         // Getting details
         JsonNode details = getMovieDetails(movieId);
 
@@ -51,18 +53,31 @@ public class MovieService {
 
         Movie movie = new Movie();
         movie.setId(movieId);
-        // store TMDb id explicitly
         movie.setTmdbId(movieId);
-        movie.setTitle(details.path("title").asText(null));
-        movie.setDescription(details.path("overview").asText(null));
+
+        if (details.hasNonNull("title") && !details.get("title").asText().isEmpty()) {
+            movie.setTitle(details.get("title").asText());
+        } else {
+            movie.setTitle("No title found");
+        }
+
+        if (details.hasNonNull("overview") && !details.get("overview").asText().isEmpty()) {
+            movie.setDescription(details.get("overview").asText());
+        } else {
+            movie.setDescription("No Description found");
+        }
+
+        if (details.hasNonNull("vote_average")) {
+            movie.setAverageRating(details.get("vote_average").asDouble());
+        } else {
+            movie.setAverageRating(5.0);
+        }
+        
         String date = details.path("release_date").asText(null);
         if (date != null && !date.isBlank()) {
             try {
                 movie.setReleaseDate(LocalDate.parse(date));
             } catch (Exception ignore) {}
-        }
-        if (details.hasNonNull("vote_average")) {
-            movie.setAverageRating(details.path("vote_average").asDouble());
         }
 
         // Getting Director (first crew with job=Director)

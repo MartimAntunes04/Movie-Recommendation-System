@@ -6,10 +6,10 @@ import { useParams } from "next/navigation";
 import { getMovieById, Movie, addToWatchlist, removeFromWatchlist, isMovieInWatchlist } from "@/Services/API";
 import { TbStar, TbLibraryPlus, TbLibraryMinus, TbCalendar, TbClock } from "react-icons/tb";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+
+
 
 export default function MovieDetailsPage() {
   const params = useParams();
