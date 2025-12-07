@@ -1,16 +1,18 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Service;
 
 import pt.uc.movierecommendation.movierecommendationsystem.Model.HistoryItem;
+import pt.uc.movierecommendation.movierecommendationsystem.Model.Movie;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.User;
 import pt.uc.movierecommendation.movierecommendationsystem.Repository.HistoryItemRepository;
 import pt.uc.movierecommendation.movierecommendationsystem.Repository.UserRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
+
+
 
 @Service
 public class HistoryService {
@@ -24,19 +26,37 @@ public class HistoryService {
         this.userRepository = userRepository;
     }
 
-    private String currentEmail() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null ? String.valueOf(auth.getPrincipal()) : null;
+    public List<HistoryItem> getCurrentUserHistory(long userId) {   
+        return historyItemRepository.findByUser_Id(userId);
     }
 
-    public List<HistoryItem> getCurrentUserHistory() {
-        String email = currentEmail();
-        if (email == null) return Collections.emptyList();
+    public boolean check(long movieId, long userId) {
+       Optional<HistoryItem> item = historyItemRepository.findByUser_IdAndMovie_Id(userId, movieId);
+        if (item == null || item.isEmpty()) return false;
+        return true;
+    }
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isEmpty()) return Collections.emptyList();
+    @Transactional
+    public HistoryItem add(Movie movie, long userId) {
+        HistoryItem item = new HistoryItem();
+        item.setMovie(movie);
+        User user = userRepository.findById(userId)
+         .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+        item.setUser(user);
 
-        Long userId = optionalUser.get().getId();
-        return historyItemRepository.findByUser_IdOrderByWatchedDateDesc(userId);
+        Optional<HistoryItem> existingItem = historyItemRepository.findByUser_IdAndMovie_Id(userId, movie.getId());
+        if (existingItem.isPresent()) {
+            throw new IllegalStateException("Movie already in history");
+        }
+        return historyItemRepository.save(item);
+    }
+    
+    @Transactional
+    public boolean remove(long movieId, long userId) {
+        Optional<HistoryItem> item = historyItemRepository.findByUser_IdAndMovie_Id(userId, movieId);
+        if (item == null || item.isEmpty()) return false;
+        historyItemRepository.delete(item.get());
+        return true;
+
     }
 }
