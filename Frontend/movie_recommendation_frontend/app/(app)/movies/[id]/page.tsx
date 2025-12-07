@@ -77,7 +77,7 @@ export default function MovieDetailsPage() {
       <div className="container mx-auto px-4 -mt-32 relative z-20 pb-12">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Poster Card */}
-          <div className="shrink-0 mx-auto md:mx-0">
+          <div className="shrink-0 mx-auto md:mx-0 flex flex-col gap-4">
             <Card className="w-64 md:w-80 border-0 shadow-2xl bg-slate-800 rounded-xl overflow-hidden">
               <CardContent className="p-0">
                 <img
@@ -90,10 +90,61 @@ export default function MovieDetailsPage() {
                 />
               </CardContent>
             </Card>
+            {/* Watchlist and Watched Buttons */}
+            <div className="flex gap-3 w-64 md:w-80">
+              <Button
+                onClick={() => setWatched(!watched)}
+                size="lg"
+                className={`flex-1 gap-2 px-2 transition-all duration-300 ${
+                  watched 
+                    ? "bg-yellow-500 hover:bg-yellow-600 text-black" 
+                    : "bg-slate-800 hover:bg-slate-700 text-white"
+                }`}
+                title={watched ? "Watched" : "Mark as Watched"}
+              >
+                {watched ? "Watched" : "Watched"}
+              </Button>
+
+              <Button
+                onClick={async () => {
+                  if (!movie) return;
+                  setWatchlistLoading(true);
+                  try {
+                    if (!watchlist) {
+                      await addToWatchlist(movie.id);
+                      setWatchlist(true);
+                    } else {
+                      await removeFromWatchlist(movie.id);
+                      setWatchlist(false);
+                    }
+                  } catch (err) {
+                    console.error('Erro ao atualizar watchlist:', err);
+                  } finally {
+                    setWatchlistLoading(false);
+                  }
+                }}
+                disabled={watchlistLoading}
+                variant="default"
+                size="lg"
+                className={`flex-1 gap-2 px-2 bg-slate-800 hover:bg-slate-700 ${
+                  watchlist ? "text-yellow-500 border-yellow-500/50" : "text-slate-200"
+                }`}
+                title={watchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+              >
+                {watchlistLoading ? (
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : watchlist ? (
+                  <TbLibraryMinus className="text-xl" />
+                ) : (
+                  <TbLibraryPlus className="text-xl" />
+                )}
+                <span className="truncate">{watchlist ? "List" : "List"}</span>
+              </Button>
+            </div>
           </div>
 
           {/* Details */}
-          <div className="flex-1 space-y-6 pt-4 md:pt-12">
+          <div className="flex-1 space-y-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-2 text-white">{movie.title}</h1>
               {movie.original_title !== movie.title && (
@@ -118,7 +169,7 @@ export default function MovieDetailsPage() {
 
             <div className="flex flex-wrap gap-2">
               {movie.genres?.map((g) => (
-                <Badge key={g.id} variant="secondary" className="bg-slate-800 text-slate-200 hover:bg-slate-700">
+                <Badge key={g.id} className="bg-slate-800 text-slate-200 hover:bg-slate-700">
                   {g.name}
                 </Badge>
               ))}
@@ -163,69 +214,6 @@ export default function MovieDetailsPage() {
                 </div>
               </div>
             )}
-
-            <Separator className="bg-slate-700" />
-
-            <div className="flex flex-wrap items-center gap-4">
-              <Button
-                onClick={() => setWatched(!watched)}
-                size="lg"
-                className={`gap-2 min-w-[160px] transition-all duration-300 ${
-                  watched 
-                    ? "bg-green-600 hover:bg-green-700 text-white" 
-                    : "bg-slate-800 hover:bg-slate-700 text-white"
-                }`}
-              >
-                {watched ? "Watched" : "Mark as Watched"}
-              </Button>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={async () => {
-                      if (!movie) return;
-                      setWatchlistLoading(true);
-                      try {
-                        if (!watchlist) {
-                          await addToWatchlist(movie.id);
-                          setWatchlist(true);
-                        } else {
-                          await removeFromWatchlist(movie.id);
-                          setWatchlist(false);
-                        }
-                      } catch (err) {
-                        console.error('Erro ao atualizar watchlist:', err);
-                      } finally {
-                        setWatchlistLoading(false);
-                      }
-                    }}
-                    disabled={watchlistLoading}
-                    variant="outline"
-                    size="lg"
-                    className={`gap-2 border-slate-700 bg-slate-800/50 hover:bg-slate-700 ${
-                      watchlist ? "text-yellow-500 border-yellow-500/50" : "text-slate-200"
-                    }`}
-                  >
-                    {watchlistLoading ? (
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    ) : watchlist ? (
-                      <>
-                        <TbLibraryMinus className="text-xl" />
-                        In Watchlist
-                      </>
-                    ) : (
-                      <>
-                        <TbLibraryPlus className="text-xl" />
-                        Add to Watchlist
-                      </>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className="bg-slate-800 text-white border-slate-700">
-                  <p>{watchlist ? "Remove from your watchlist" : "Add to your watchlist"}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
           </div>
         </div>
       </div>
