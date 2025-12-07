@@ -43,6 +43,11 @@ public class HistoryService {
         User user = userRepository.findById(userId)
          .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
         item.setUser(user);
+
+        Optional<HistoryItem> existingItem = historyItemRepository.findByUser_IdAndMovie_Id(userId, movie.getId());
+        if (existingItem.isPresent()) {
+            throw new IllegalStateException("Movie already in history");
+        }
         return historyItemRepository.save(item);
     }
     

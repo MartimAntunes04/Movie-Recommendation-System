@@ -31,8 +31,11 @@ public class HistoryController {
     private final AuthService authService;
     private final MovieService movieService;
 
-    public HistoryController(HistoryService historyService, AuthService authService, 
-        ProfileService profileService, MovieService movieService) {
+    public HistoryController(
+            HistoryService historyService,
+            AuthService authService,
+            MovieService movieService
+    ) {
         this.historyService = historyService;
         this.authService = authService;
         this.movieService = movieService;
@@ -43,10 +46,14 @@ public class HistoryController {
         @RequestHeader(name = "Authorization", required = false) String authorization,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
-    ) throws IOException, InterruptedException {
+    )  {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header");
+        }
         //get current user's id
         String token = authorization.substring("Bearer ".length());
-         Long authUserId = authService.getUserIdFromToken(token);
+
+        Long authUserId = authService.getUserIdFromToken(token);
         if (authUserId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
 
         // Get list of history items
@@ -90,12 +97,12 @@ public class HistoryController {
                             "success", true,
                             "message", "Added to history"
                     ));
-        }catch (Exception e) {
+        }catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Movie already in history");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "success", false,
-                            "message", e.getMessage()
-                    ));
+                    .body(e.getMessage());
         }
     }
 
@@ -128,7 +135,7 @@ public class HistoryController {
                         ));
             }
         }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of(
                             "success", false,
                             "message", e.getMessage()
@@ -169,7 +176,7 @@ public class HistoryController {
             }
 
         }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of(
                             "success", false,
                             "message", e.getMessage()
