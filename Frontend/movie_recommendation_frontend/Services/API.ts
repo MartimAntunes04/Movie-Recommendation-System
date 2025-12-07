@@ -34,6 +34,20 @@ export type Movie = {
   genres?: { id: number; name: string }[];
   video: boolean;
   popularity: number;
+  credits?: {
+    crew: {
+      id: number;
+      job: string;
+      name: string;
+      department: string;
+    }[];
+    cast: {
+      id: number;
+      name: string;
+      character: string;
+      profile_path: string | null;
+    }[];
+  };
 };
 
 export type FilteredSearchParams = {
