@@ -5,7 +5,7 @@ import { useUserProfile, getInitials } from "@/hooks/useUserProfile";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { TbMail, TbEdit, TbClock } from 'react-icons/tb';
+import { TbMail, TbEdit, TbClock, TbArrowRight } from 'react-icons/tb';
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { MovieCarousel } from "@/components/MovieCarousel";
@@ -115,11 +115,18 @@ export default function ProfilePage() {
         
         <div className="max-w-6xl mx-auto px-4 py-12">
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-slate-700/50">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-yellow-500/10 rounded-full">
-                <TbClock className="text-2xl text-yellow-500" />
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-yellow-500/10 rounded-full">
+                  <TbClock className="text-2xl text-yellow-500" />
+                </div>
                 <h2 className="text-2xl font-bold text-white">Movie History</h2>
+              </div>
+              <Link href="/history">
+                <Button variant="ghost" className="text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10">
+                  Ver mais <TbArrowRight className="ml-2" />
+                </Button>
+              </Link>
             </div>
             {historyLoading ? (
               <MovieCarouselSkeleton />
