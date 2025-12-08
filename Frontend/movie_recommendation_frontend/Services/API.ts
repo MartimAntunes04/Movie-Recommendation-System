@@ -410,5 +410,69 @@ export async function isMovieInWatchlist(movieId: number): Promise<boolean> {
   }
 }
 
+export async function addToHistory(movieId: number) {
+  try {
+    const response = await fetch(`${API_URL}/history/${encodeURIComponent(movieId)}`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      handleUnauthorized(response);
+      const text = await response.text();
+      // Ignore conflict error (already in history)
+      if (response.status !== 409) {
+          throw new Error(text || `Erro ao adicionar ao histórico: ${response.statusText}`);
+      }
+    }
+
+    return await response.json().catch(() => ({})); 
+  } catch (err) {
+    console.error('Erro em addToHistory:', err);
+    throw err;
+  }
+}
+
+export async function removeFromHistory(movieId: number) {
+  try {
+    const response = await fetch(`${API_URL}/history/${encodeURIComponent(movieId)}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      handleUnauthorized(response);
+      const text = await response.text();
+      throw new Error(text || `Erro ao remover do histórico: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error('Erro em removeFromHistory:', err);
+    throw err;
+  }
+}
+
+export async function isMovieInHistory(movieId: number): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_URL}/history/checkHistory/${movieId}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      console.error("Erro no servidor ao verificar histórico.");
+      return false;
+    }
+
+    const data = await response.json();
+    return data.success === true;
+    
+  } catch (err) {
+    console.error('Erro em isMovieInHistory:', err);
+    return false;
+  }
+}
+
 
 
