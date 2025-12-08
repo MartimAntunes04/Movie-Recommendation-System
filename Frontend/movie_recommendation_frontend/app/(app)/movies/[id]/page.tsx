@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getMovieById, Movie, addToWatchlist, removeFromWatchlist, isMovieInWatchlist } from "@/Services/API";
+import { getMovieById, Movie, addToWatchlist, removeFromWatchlist, isMovieInWatchlist, addToHistory, removeFromHistory, isMovieInHistory } from "@/Services/API";
 import { TbStar, TbLibraryPlus, TbLibraryMinus, TbCalendar, TbClock } from "react-icons/tb";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ export default function MovieDetailsPage() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [watched, setWatched] = useState(false);
+  const [watchedLoading, setWatchedLoading] = useState(false);
   const [watchlist, setWatchlist] = useState(false);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
 
@@ -31,6 +32,9 @@ export default function MovieDetailsPage() {
         
         const inWatchlist = await isMovieInWatchlist(Number(id));
         setWatchlist(inWatchlist);
+
+        const inHistory = await isMovieInHistory(Number(id));
+        setWatched(inHistory);
       } catch (err) {
         console.error("Erro ao buscar filme:", err);
       } finally {
@@ -93,7 +97,24 @@ export default function MovieDetailsPage() {
             {/* Watchlist and Watched Buttons */}
             <div className="flex gap-3 w-64 md:w-80">
               <Button
-                onClick={() => setWatched(!watched)}
+                onClick={async () => {
+                  if (!movie) return;
+                  setWatchedLoading(true);
+                  try {
+                    if (!watched) {
+                      await addToHistory(movie.id);
+                      setWatched(true);
+                    } else {
+                      await removeFromHistory(movie.id);
+                      setWatched(false);
+                    }
+                  } catch (err) {
+                    console.error('Erro ao atualizar histórico:', err);
+                  } finally {
+                    setWatchedLoading(false);
+                  }
+                }}
+                disabled={watchedLoading}
                 size="lg"
                 className={`flex-1 gap-2 px-2 transition-all duration-300 ${
                   watched 
@@ -102,7 +123,13 @@ export default function MovieDetailsPage() {
                 }`}
                 title={watched ? "Watched" : "Mark as Watched"}
               >
-                {watched ? "Watched" : "Watched"}
+                {watchedLoading ? (
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : watched ? (
+                  "Watched"
+                ) : (
+                  "Mark as Watched"
+                )}
               </Button>
 
               <Button

@@ -195,7 +195,7 @@ export async function topRatedMovies(): Promise<{ results: Movie[] }> {
       `${API_URL}/movies/top`,
       {
         method: "GET",
-        headers: getAuthHeaders(),
+        headers: getAuthHeaders(), 
       }
     );
 
@@ -410,5 +410,112 @@ export async function isMovieInWatchlist(movieId: number): Promise<boolean> {
   }
 }
 
+export async function addToHistory(movieId: number) {
+  try {
+    const response = await fetch(`${API_URL}/history/${encodeURIComponent(movieId)}`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
 
+    if (!response.ok) {
+      handleUnauthorized(response);
+      const text = await response.text();
+      // Ignore conflict error (already in history)
+      if (response.status !== 409) {
+          throw new Error(text || `Erro ao adicionar ao histórico: ${response.statusText}`);
+      }
+    }
 
+    return await response.json().catch(() => ({})); 
+  } catch (err) {
+    console.error('Erro em addToHistory:', err);
+    throw err;
+  }
+}
+
+export async function removeFromHistory(movieId: number) {
+  try {
+    const response = await fetch(`${API_URL}/history/${encodeURIComponent(movieId)}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      handleUnauthorized(response);
+      const text = await response.text();
+      throw new Error(text || `Erro ao remover do histórico: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error('Erro em removeFromHistory:', err);
+    throw err;
+  }
+}
+
+export async function isMovieInHistory(movieId: number): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_URL}/history/checkHistory/${movieId}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      console.error("Erro no servidor ao verificar histórico.");
+      return false;
+    }
+
+    const data = await response.json();
+    return data.success === true;
+    
+  } catch (err) {
+    console.error('Erro em isMovieInHistory:', err);
+    return false;
+  }
+}
+
+export async function getHistory(page = 0, size = 1000): Promise<Movie[]> {
+  try {
+    const response = await fetch(`${API_URL}/history?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      handleUnauthorized(response);
+      if (response.status === 404) return [];
+      const data = await response.json();
+      if(data.message && data.message === "No movies in your history.") return [];
+      throw new Error(`Erro ao buscar histórico: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    const items = data.historyList || [];
+    
+    const movies = items.map((item: any) => {
+      const m = item.movie;
+      return {
+        id: m.id,
+        title: m.title,
+        overview: m.description || "",
+        poster_path: m.posterPath,
+        release_date: m.releaseDate,
+        backdrop_path: m.backdropPath || null,
+        vote_average: m.averageRating !== undefined ? m.averageRating : (m.vote_average || 0),
+        vote_count: m.voteCount !== undefined ? m.voteCount : (m.vote_count || 0),
+        adult: false,
+        original_title: m.title,
+        original_language: 'en',
+        genre_ids: [],
+        video: false,
+        popularity: 0
+      } as Movie;
+    });
+    return movies;
+
+  } catch (err) {
+    console.error('Erro em getHistory:', err);
+    throw err;
+  }
+}
