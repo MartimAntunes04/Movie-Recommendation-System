@@ -11,11 +11,9 @@ import pt.uc.movierecommendation.movierecommendationsystem.Model.Movie;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.HistoryService;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.MovieService;
-import pt.uc.movierecommendation.movierecommendationsystem.Service.ProfileService;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.IOException;
 
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -107,7 +105,7 @@ public class HistoryController {
     }
 
     @DeleteMapping("/{movieId}")
-    public ResponseEntity <?> deleteMovietoHistory(
+    public ResponseEntity <?> deleteMovieHistory(
             @RequestHeader (name = "Authorization", required = false) String authorization,
             @PathVariable Long movieId
     ){
@@ -147,7 +145,7 @@ public class HistoryController {
 
     @GetMapping("/checkHistory/{movieId}")
     public ResponseEntity<?> checkHistory(
-        @RequestHeader(name = "Authorization", required = false) String authorization,
+        @RequestHeader(name = "Authorization", required = true) String authorization,
         @PathVariable  long movieId
         ) {
 

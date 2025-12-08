@@ -38,6 +38,9 @@ public class Movie {
     @Column(name = "average_rating")
     private Double averageRating;
 
+    @Column(name = "vote_count")
+    private Long voteCount;
+
     @ManyToMany
     @JoinTable(
         name = "movies_genres",
@@ -74,8 +77,12 @@ public class Movie {
     public String getPosterPath() { return posterPath; }
     public void setPosterPath(String posterPath) { this.posterPath = posterPath; }
 
+    public Long getVoteCount() { return voteCount; }
+    public void setVoteCount(Long voteCount) { this.voteCount = voteCount; }
+
     public Double getAverageRating() { return averageRating; }
     public void setAverageRating(Double averageRating) { this.averageRating = averageRating; }
+
 
     public Set<Genre> getGenres() { return genres; }
     public void setGenres(Set<Genre> genres) { this.genres = genres; }
