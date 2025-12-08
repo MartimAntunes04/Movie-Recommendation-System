@@ -15,9 +15,9 @@ public interface RatingsRepository extends JpaRepository<Ratings, Long> {
     Optional<Ratings> findByUser_IdAndMovie_Id(Long userId, Long movieId);
     
     //best rated
-    List<Ratings> findTop20ByUser_IdAndRateGreaterThanEqualOrderByRating(Long userId, Integer rateingThreshold);
+    List<Ratings> findTop20ByUser_IdAndRatingGreaterThanEqualOrderByRating(Long userId, Integer rateingThreshold);
     //worst rated
-    List<Ratings> findTop20ByUser_IdAndRateLowerThanEqualOrderByRatingAsc(Long userId, Integer rateingThreshold);
+    List<Ratings> findTop20ByUser_IdAndRatingLessThanEqualOrderByRatingAsc(Long userId, Integer rateingThreshold);
 
 
     @Query(
