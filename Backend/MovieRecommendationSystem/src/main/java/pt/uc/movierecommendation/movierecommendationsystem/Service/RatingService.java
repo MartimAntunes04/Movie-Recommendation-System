@@ -25,9 +25,9 @@ public class RatingService {
     }
 
     public Float check(long movieId, long userId) {
-       return  ratingsRepository.findByUser_IdAndMovie_Id(userId, movieId).map(rating -> {
-        return rating.getRating();
-       }).orElse(Float.valueOf(-1));
+        return ratingsRepository.findByUser_IdAndMovie_Id(userId, movieId)
+                .map(Ratings::getRating)
+                .orElse(null);
     }
 
     @Transactional

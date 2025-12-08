@@ -31,61 +31,100 @@ public class RatingController {
     private final AuthService authService;
     private final MovieService movieService;
 
-    public RatingController(RatingService ratingService, AuthService authService, 
-        ProfileService profileService, MovieService movieService) {
+    public RatingController(
+            RatingService ratingService,
+            AuthService authService,
+            MovieService movieService
+    ) {
         this.ratingService = ratingService;
         this.authService = authService;
         this.movieService = movieService;
     }
 
 
-    @PostMapping("/uptade")
+    @PutMapping("/{movieId}")
     public ResponseEntity<?> updateRating(
-        @RequestHeader(name = "Authorization", required = true) String authorization,
-        @RequestParam (required = true) long id,
-        @RequestParam (required = true) float rating
+            @RequestHeader (name = "Authorization", required = false) String authorization,
+            @PathVariable long movieId,
+            @RequestParam float rating
         ) throws IOException, InterruptedException {
         //check if history item already exists
-        String token = authorization.substring("Bearer ".length());
-        long userId = authService.getUserIdFromToken(token);
-        
-        //yes -> update it
-        if(ratingService.update(id, userId, rating))  return ResponseEntity.ok(Map.of(
-                        "success", true,
-                        "message", "updated rating"
-                ));
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header");
+        }
 
-        //no -> add it
-        Movie fetched = movieService.fetchOrCreateMovieById(id);
-        ratingService.add(fetched, userId, rating);
-        
-        return ResponseEntity.ok(Map.of(
+        String token = authorization.substring("Bearer ".length());
+
+        Long userId = authService.getUserIdFromToken(token);
+        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+
+
+        try{
+            // Try to update
+            boolean updated = ratingService.update(movieId, userId, rating);
+            if (updated) {
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Rating updated"
+                ));
+            }
+
+            // Else create new rating
+            Movie movie = movieService.fetchOrCreateMovieById(movieId);
+            ratingService.add(movie, userId, rating);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "success", true,
-                    "message", "Added to history"
+                    "message", "Rating added"
             ));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("success", false, "message", "Movie not found"));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
 
     }
 
     
-    @GetMapping("/checkRating")
-    public ResponseEntity<?> checkHistory(
-        @RequestHeader(name = "Authorization", required = true) String authorization,
-        @RequestParam (required = true) long id 
-        ) throws IOException, InterruptedException {
+    @GetMapping("/{movieId}")
+    public ResponseEntity<?> checkRating(
+            @RequestHeader (name = "Authorization", required = false) String authorization,
+            @PathVariable long movieId
+        ) {
         //check rating item already exists
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header");
+        }
+
         String token = authorization.substring("Bearer ".length());
-        long userId = authService.getUserIdFromToken(token);
-        
-        Float rating = ratingService.check(id, userId);
-        if(rating > 0.0f) return ResponseEntity.ok(Map.of(
+
+        Long userId = authService.getUserIdFromToken(token);
+        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+
+        try{
+            Float rating = ratingService.check(movieId, userId);
+            if (rating != null) {
+                return ResponseEntity.ok(Map.of(
                         "success", true,
                         "rating", rating
                 ));
+            }
 
-        return ResponseEntity.ok(Map.of(
+            return ResponseEntity.ok(Map.of(
                     "success", false,
-                    "message", "no rating"
+                    "message", "No rating for this movie"
             ));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("success", false, "message", "Movie not found"));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
 
     }
 }
