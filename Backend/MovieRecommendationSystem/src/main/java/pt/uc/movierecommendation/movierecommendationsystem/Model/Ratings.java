@@ -1,7 +1,6 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "ratings")

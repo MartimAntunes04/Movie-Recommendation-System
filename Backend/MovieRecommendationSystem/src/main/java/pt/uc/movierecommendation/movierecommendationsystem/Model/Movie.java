@@ -13,6 +13,12 @@ public class Movie {
 
     @Column(nullable = false, length = 512)
     private String title;
+    
+    @Column(name = "tmdb_id", unique = true)
+    private Long tmdbId;
+
+    @Column(name = "poster_path", length = 512)
+    private String posterPath;
 
     @Column(columnDefinition = "TEXT")
     private String director;
@@ -25,6 +31,9 @@ public class Movie {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+    
+    @Column(columnDefinition = "TEXT")
+    private String overview;
 
     @Column(name = "average_rating")
     private Double averageRating;
@@ -58,6 +67,15 @@ public class Movie {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    
+    public String getOverview() { return overview; }
+    public void setOverview(String overview) { this.overview = overview; }
+
+    public Long getTmdbId() { return tmdbId; }
+    public void setTmdbId(Long tmdbId) { this.tmdbId = tmdbId; }
+
+    public String getPosterPath() { return posterPath; }
+    public void setPosterPath(String posterPath) { this.posterPath = posterPath; }
 
     public Long getVoteCount() { return voteCount; }
     public void setVoteCount(Long voteCount) { this.voteCount = voteCount; }

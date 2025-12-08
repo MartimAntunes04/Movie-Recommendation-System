@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";	
 import { TbEye, TbEyeOff, TbMovie, TbCheck, TbX } from 'react-icons/tb';
 import { Label } from "@/components/ui/label";
@@ -24,7 +23,6 @@ export default function Register() {
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
 
   const validatePasswords = (pass: string, confirmPass: string) => {
     if (confirmPass && pass !== confirmPass) {
@@ -59,10 +57,8 @@ export default function Register() {
       const data = await register(email, password, username, firstName, lastName);
 
     if (data.success) {
-
-      setBackendError(""); // limpar erros
+      setBackendError("");
       setSuccessMessage(data.message || "Conta criada com sucesso!");
-
 
       setEmail(""); 
       setPassword(""); 
@@ -86,9 +82,9 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center ">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md space-y-8 p-8">
-        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm dark:bg-slate-800/80">
+        <Card className="shadow-xl border-0 bg-slate-800/80 backdrop-blur-sm">
           <CardHeader className="space-y-2 text-center">
             <div className="flex items-center justify-center gap-3 text-yellow-500 mb-4">
               <TbMovie className="text-4xl" />
@@ -96,10 +92,10 @@ export default function Register() {
                 MovieRec
               </span>
             </div>
-            <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
+            <CardTitle className="text-2xl font-bold text-white">
               Welcome!
             </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-400">
+            <CardDescription className="text-slate-400">
               Create your account to start using our movie recommendation system!
             </CardDescription>
           </CardHeader>
@@ -197,7 +193,6 @@ export default function Register() {
                     {showConfirmPassword ? <TbEyeOff className="size-4" /> : <TbEye className="size-4" />}
                   </Button>
                   
-                  {/* Ícone de validação */}
                   {confirmPassword && (
                     <div className="absolute right-10 top-1/2 -translate-y-1/2">
                       {password === confirmPassword ? (
@@ -209,7 +204,6 @@ export default function Register() {
                   )}
                 </div>
                 
-                {/* Mensagem de erro */}
                 {passwordError && (
                   <p className="text-sm text-red-500 flex items-center gap-1">
                     <TbX className="size-3" />
@@ -217,7 +211,6 @@ export default function Register() {
                   </p>
                 )}
                 
-                {/* Mensagem de sucesso */}
                 {confirmPassword && password === confirmPassword && !passwordError && (
                   <p className="text-sm text-green-500 flex items-center gap-1">
                     <TbCheck className="size-3" />
@@ -225,20 +218,17 @@ export default function Register() {
                   </p>
                 )}
 
-                {/* Backend Error */}
                 {backendError && (
                   <p className="text-sm text-red-500 flex items-center gap-1 mt-2">
                     <TbX className="size-3" /> {backendError}
                   </p>
-)}
+                )}
 
                 {successMessage && (
                   <p className="text-sm text-green-500 flex items-center gap-1 mt-2 animate-fade-in">
                     <TbCheck className="size-3" /> {successMessage}
                   </p>
-)}
-
-                
+                )}
               </div>
               
               <Button
@@ -250,7 +240,7 @@ export default function Register() {
               </Button>
             </form>
             
-            <p className="text-center text-sm text-slate-600 dark:text-slate-400">    
+            <p className="text-center text-sm text-slate-400">    
               Do you already have an account? {" "}
               <Button variant="link" className="text-blue-600 hover:cursor-pointer hover:text-blue-700 p-0 h-auto font-medium">
                 <Link href="/login">Click here</Link>

@@ -53,14 +53,20 @@ public class MovieService {
 
         Movie movie = new Movie();
         movie.setId(movieId);
+        movie.setTmdbId(movieId);
+
         if (details.hasNonNull("title") && !details.get("title").asText().isEmpty()) {
             movie.setTitle(details.get("title").asText());
-        } else movie.setTitle("No title found");
-        
+        } else {
+            movie.setTitle("No title found");
+        }
+
         if (details.hasNonNull("overview") && !details.get("overview").asText().isEmpty()) {
             movie.setDescription(details.get("overview").asText());
-        } else movie.setDescription("No Description  found");
-        
+        } else {
+            movie.setDescription("No Description found");
+        }
+
         if (details.hasNonNull("vote_average")) {
             movie.setAverageRating(details.get("vote_average").asDouble());        
         }else movie.setAverageRating(5.0);
@@ -89,6 +95,9 @@ public class MovieService {
                 .map(name -> name.path("name").asText())
                 .collect(Collectors.joining(", "));
         movie.setCastMembers(cast);
+
+        // store poster path from TMDb
+        movie.setPosterPath(details.path("poster_path").asText(null));
 
         return movieRepository.save(movie);
     }

@@ -49,7 +49,6 @@ public class MovieController {
     @Autowired
     private WatchListItemRepository watchListItemRepository;
 
-
     // ================== SEARCH ==================
 
     @GetMapping("/search")
@@ -71,43 +70,48 @@ public class MovieController {
     }
 
     @GetMapping("/filtered_search")
-    public String filteredSearchMovies(	@RequestParam(required = false) Double ratingMin,
-										@RequestParam(required = false) Double ratingMax,
-										@RequestParam(required = false) Integer year,
-										@RequestParam(required = false) String genre,
-										@RequestParam(required = false) String director) throws IOException, InterruptedException {
+    public String filteredSearchMovies(@RequestParam(required = false) Double ratingMin,
+            @RequestParam(required = false) Double ratingMax,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) String director) throws IOException, InterruptedException {
 
-      	String base = "https://api.themoviedb.org/3/discover/movie";
-		List<String> params = new ArrayList<>();
+        String base = "https://api.themoviedb.org/3/discover/movie";
+        List<String> params = new ArrayList<>();
 
-		// Filter per rating
-		if (ratingMin != null) params.add("vote_average.gte=" + ratingMin);
-		if (ratingMax != null) params.add("vote_average.lte=" + ratingMax);
+        // Filter per rating
+        if (ratingMin != null)
+            params.add("vote_average.gte=" + ratingMin);
+        if (ratingMax != null)
+            params.add("vote_average.lte=" + ratingMax);
 
-		// Filter per year
-		if (year != null) params.add("primary_release_year=" + year);
+        // Filter per year
+        if (year != null)
+            params.add("primary_release_year=" + year);
 
-		// Filter per genre
-		if (genre != null && !genre.isBlank()) {
-			Integer genreId = findGenreId(genre);
-			if (genreId != null) params.add("with_genres=" + genreId);
-		}
-		
-		// Filter per director
-		if (director != null && !director.isBlank()) {
-			Integer directorId = findPersonId(director);
-            if (directorId == null) return "{}"; // director not found
+        // Filter per genre
+        if (genre != null && !genre.isBlank()) {
+            Integer genreId = findGenreId(genre);
+            if (genreId != null)
+                params.add("with_genres=" + genreId);
+        }
+
+        // Filter per director
+        if (director != null && !director.isBlank()) {
+            Integer directorId = findPersonId(director);
+            if (directorId == null)
+                return "{}"; // director not found
             params.add("with_crew=" + directorId);
-		}
+        }
 
-		if (params.isEmpty()) {
-			// if no filters provided, return popular movies
-			return popularMovies();
-		}
+        if (params.isEmpty()) {
+            // if no filters provided, return popular movies
+            return popularMovies();
+        }
 
-		params.add("api_key=" + apiKey);
+        params.add("api_key=" + apiKey);
 
-		HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newHttpClient();
         String url = base + "?" + String.join("&", params);
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -118,17 +122,18 @@ public class MovieController {
 
     @GetMapping("/recommended")
     public ResponseEntity<?> getRecommendedMovies(
-        @RequestHeader(name = "Authorization", required = false) String authorization,
-        @RequestParam(name = "page", defaultValue = "1") int page
-    ) {
+            @RequestHeader(name = "Authorization", required = false) String authorization,
+            @RequestParam(name = "page", defaultValue = "1") int page) {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header");
         }
         String token = authorization.substring("Bearer ".length());
         Long userId = authService.getUserIdFromToken(token);
-        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        if (userId == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
 
-        if (page < 1) page = 1;
+        if (page < 1)
+            page = 1;
 
         try {
             List<String> likedTitles = new ArrayList<>();
@@ -177,7 +182,8 @@ public class MovieController {
             List<Integer> genreIds = new ArrayList<>();
             for (String name : selectedGenreNames) {
                 for (Genre genre : likedGenres) {
-                    if (genre != null && genre.getName() != null && genre.getName().trim().equalsIgnoreCase(name) && genre.getId() != null) {
+                    if (genre != null && genre.getName() != null && genre.getName().trim().equalsIgnoreCase(name)
+                            && genre.getId() != null) {
                         genreIds.add(genre.getId().intValue());
                         break;
                     }
@@ -198,9 +204,9 @@ public class MovieController {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             return ResponseEntity
-                .status(response.statusCode())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(response.body());
+                    .status(response.statusCode())
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .body(response.body());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Recommendation error");
         }
@@ -245,7 +251,7 @@ public class MovieController {
     public ResponseEntity<String> getMovieById(@PathVariable String id) throws IOException, InterruptedException {
         String url = "https://api.themoviedb.org/3/movie/" +
                 URLEncoder.encode(id, StandardCharsets.UTF_8) +
-                "?api_key=" + apiKey;
+                "?api_key=" + apiKey + "&append_to_response=credits";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -261,24 +267,23 @@ public class MovieController {
                 .body(response.body());
     }
 
-
-
-
-	// Helper methods to find IDs
-	public Integer findPersonId(String name) throws IOException, InterruptedException {
+    // Helper methods to find IDs
+    public Integer findPersonId(String name) throws IOException, InterruptedException {
         String url = "https://api.themoviedb.org/3/search/person"
                 + "?api_key=" + apiKey
                 + "&query=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
 
-		HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() != 200) return null;
+        if (response.statusCode() != 200)
+            return null;
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode results = mapper.readTree(response.body()).path("results");
-        if (!results.isArray() || results.size() == 0) return null;
+        if (!results.isArray() || results.size() == 0)
+            return null;
 
         // Exact name match
         for (JsonNode person : results) {
@@ -301,13 +306,13 @@ public class MovieController {
     private Integer findGenreId(String genreName) throws IOException, InterruptedException {
         String url = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + apiKey;
 
-		HttpClient client = HttpClient.newHttpClient();
-		ObjectMapper mapper = new ObjectMapper();
+        HttpClient client = HttpClient.newHttpClient();
+        ObjectMapper mapper = new ObjectMapper();
 
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-		// Searching for the genre by name and getting its id
+        // Searching for the genre by name and getting its id
         JsonNode genres = mapper.readTree(response.body()).path("genres");
         if (genres.isArray()) {
             for (JsonNode genre : genres) {
@@ -318,6 +323,5 @@ public class MovieController {
         }
         return null;
     }
-
 
 }

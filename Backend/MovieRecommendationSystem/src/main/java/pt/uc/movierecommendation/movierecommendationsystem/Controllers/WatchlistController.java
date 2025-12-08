@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
+
+import java.io.IOException;
 import java.util.Map;
 
 import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;
@@ -44,6 +46,25 @@ public class WatchlistController {
         }
     }
     
+    @GetMapping("/checkWatchlist/{id}")
+    public ResponseEntity<?> checkWatchlist(
+        @RequestHeader(name = "Authorization", required = true) String authorization,
+        @PathVariable long id
+        ) throws IOException, InterruptedException {
+        //check if watchlist item already exists
+        String token = authorization.substring("Bearer ".length());
+        long userId = authService.getUserIdFromToken(token);
+        
+        if(watchlistService.check(id, userId))  return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Movie in user's whatchlist"
+                ));
+
+        return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Not in user's whatchlist"
+            ));
+    }
 
     @PostMapping("/{movieId}")
     public ResponseEntity<?> addMovieToWatchlist(
