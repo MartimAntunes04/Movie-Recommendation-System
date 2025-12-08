@@ -1,16 +1,33 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile, getInitials } from "@/hooks/useUserProfile";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { TbMail, TbEdit } from 'react-icons/tb';
+import { TbMail, TbEdit, TbClock } from 'react-icons/tb';
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { MovieCarousel } from "@/components/MovieCarousel";
+import { MovieCarouselSkeleton } from "@/components/MovieCarouselSkeleton";
+import { getHistory, Movie } from "@/Services/API";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const { token, isAuthenticated, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useUserProfile(token);
+  const [history, setHistory] = useState<Movie[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      getHistory()
+        .then(setHistory)
+        .catch((err) => console.error("Erro ao carregar histórico:", err))
+        .finally(() => setHistoryLoading(false));
+    }
+  }, [isAuthenticated, token]);
 
   if (authLoading || profileLoading) {
     return (
@@ -72,13 +89,13 @@ export default function ProfilePage() {
                         className="w-auto bg-linear-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm sm:text-base"
                       >
                         <TbEdit className="h-4 w-4 mr-2" />
-                        Editar Perfil
+                        Edit Profile
                       </Button>
                     </Link>
                   </div>
                 </div>
                 <Separator orientation="horizontal" className="my-4 bg-slate-700" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 mb-8">
                   <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-slate-900/50">
                     <div className="p-1.5 sm:p-2 rounded-full bg-yellow-500/10 shrink-0">
                       <TbMail className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
@@ -95,6 +112,33 @@ export default function ProfilePage() {
             </CardContent>
           </div>
         </Card>
+        
+        <div className="max-w-6xl mx-auto px-4 py-12">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-slate-700/50">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-yellow-500/10 rounded-full">
+                <TbClock className="text-2xl text-yellow-500" />
+              </div>
+                <h2 className="text-2xl font-bold text-white">Movie History</h2>
+            </div>
+            {historyLoading ? (
+              <MovieCarouselSkeleton />
+            ) : history.length > 0 ? (
+              <div className="mt-8">
+                <MovieCarousel 
+                  movies={history} 
+                  onMovieClick={(movie) => router.push(`/movies/${movie.id}`)}
+                />
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-slate-900/50 rounded-lg border border-slate-800 border-dashed">
+                <TbClock className="text-4xl text-slate-600 mx-auto mb-3" />
+                <p className="text-slate-400 font-medium">No movies in your history.</p>
+                <p className="text-slate-500 text-sm mt-1">Mark movies as watched to see them here.</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
