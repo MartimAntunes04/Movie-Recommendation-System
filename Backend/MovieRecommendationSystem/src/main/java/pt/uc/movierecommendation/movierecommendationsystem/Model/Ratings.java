@@ -1,7 +1,6 @@
 package pt.uc.movierecommendation.movierecommendationsystem.Model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "ratings")
@@ -11,10 +10,7 @@ public class Ratings {
     private Long id;
 
     @Column(name = "rate", nullable = false)
-    private Integer rate;
-
-    @Column(name = "rating_date", nullable = false)
-    private LocalDate ratingDate;
+    private Float rating;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "movies_id", nullable = false)
@@ -28,11 +24,8 @@ public class Ratings {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Integer getRate() { return rate; }
-    public void setRate(Integer rate) { this.rate = rate; }
-
-    public LocalDate getRatingDate() { return ratingDate; }
-    public void setRatingDate(LocalDate ratingDate) { this.ratingDate = ratingDate; }
+    public Float getRating() { return this.rating; }
+    public void setRating(Float rating) { this.rating = rating; }
 
     public Movie getMovie() { return movie; }
     public void setMovie(Movie movie) { this.movie = movie; }

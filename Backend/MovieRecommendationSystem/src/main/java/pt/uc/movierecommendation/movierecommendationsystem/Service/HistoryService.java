@@ -31,9 +31,9 @@ public class HistoryService {
     }
 
     public boolean check(long movieId, long userId) {
-       Optional<HistoryItem> item = historyItemRepository.findByUser_IdAndMovie_Id(userId, movieId);
-        if (item == null || item.isEmpty()) return false;
-        return true;
+       return historyItemRepository.findByUser_IdAndMovie_Id(userId, movieId).map(item ->{
+            return true;
+        }).orElse(false);  
     }
 
     @Transactional
@@ -53,10 +53,9 @@ public class HistoryService {
     
     @Transactional
     public boolean remove(long movieId, long userId) {
-        Optional<HistoryItem> item = historyItemRepository.findByUser_IdAndMovie_Id(userId, movieId);
-        if (item == null || item.isEmpty()) return false;
-        historyItemRepository.delete(item.get());
-        return true;
-
+        return historyItemRepository.findByUser_IdAndMovie_Id(userId, movieId).map(item ->{
+            historyItemRepository.delete(item);
+            return true;
+        }).orElse(false);  
     }
 }

@@ -68,10 +68,12 @@ public class MovieService {
         }
 
         if (details.hasNonNull("vote_average")) {
-            movie.setAverageRating(details.get("vote_average").asDouble());
-        } else {
-            movie.setAverageRating(5.0);
-        }
+            movie.setAverageRating(details.get("vote_average").asDouble());        
+        }else movie.setAverageRating(5.0);
+
+        if (details.hasNonNull("vote_count")) {
+            movie.setVoteCount(details.get("vote_count").asLong());        
+        }else movie.setVoteCount(0L);
         
         String date = details.path("release_date").asText(null);
         if (date != null && !date.isBlank()) {

@@ -139,8 +139,7 @@ public class MovieController {
             List<String> likedTitles = new ArrayList<>();
 
             // Getting top rated movies for the user
-            List<Ratings> topRated = ratingsRepository
-                    .findTop20ByUser_IdAndRateGreaterThanEqualOrderByRatingDateDesc(userId, 7);
+            List<Ratings> topRated = ratingsRepository.findTop20ByUser_IdAndRatingLessThanEqualOrderByRatingAsc(userId, 7);
             List<Genre> likedGenres = new ArrayList<>();
             for (Ratings item : topRated) {
                 Movie movie = item.getMovie();
