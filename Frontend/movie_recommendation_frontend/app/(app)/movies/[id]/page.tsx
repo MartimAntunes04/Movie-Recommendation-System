@@ -22,6 +22,7 @@ export default function MovieDetailsPage() {
   const [userRating, setUserRating] = useState<number | null>(null); // 1..5 or null
   const [userHasRated, setUserHasRated] = useState<boolean>(false);
   const [ratingSubmitting, setRatingSubmitting] = useState<boolean>(false);
+  const [dbRating, setDbRating] = useState<number | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -42,6 +43,7 @@ export default function MovieDetailsPage() {
           const rating = await checkRating(Number(id));
           if (rating !== null && rating !== undefined) {
             setUserRating(rating);
+            setDbRating(rating);
             setUserHasRated(true);
           }
         } catch (err) {
@@ -80,6 +82,7 @@ export default function MovieDetailsPage() {
     try {
       setRatingSubmitting(true);
       const res = await updateRating(movie.id, userRating);
+      setDbRating(userRating);
       if (res && (res.success === true || res.message)) {
         setUserHasRated(true);
       } else {
@@ -88,24 +91,48 @@ export default function MovieDetailsPage() {
     } catch (err) {
       console.error('Erro ao enviar rating:', err);
     } finally {
+
       setRatingSubmitting(false);
     }
   };
 
+  const handleRatingUpdate = async () => {
+    if (!movie) return;
+    if (userRating === null) return;
+
+    try {
+      setRatingSubmitting(true);
+      const res = await updateRating(movie.id, userRating);
+      const refreshedRating = await checkRating(movie.id);
+      if (refreshedRating !== null && refreshedRating !== undefined) {
+        setDbRating(refreshedRating); // atualiza o valor estático mostrado no texto
+      }
+      console.log("Update Rating Result:", res);
+    } catch (err) {
+      console.error("Erro ao atualizar rating:", err);
+    } finally {
+      setRatingSubmitting(false);
+    }
+  };
+
+
   const StarWidget = () => (
-    <div className="flex gap-2 text-3xl items-center justify-center">
-      {[1, 2, 3, 4, 5].map((value) => (
-        <TbStar
-          key={value}
-          className={`transition ${ (userRating ?? 0) >= value ? "text-yellow-400 fill-yellow-400" : "text-slate-500" } ${userHasRated ? "cursor-default opacity-70" : "cursor-pointer hover:text-yellow-300"}`}
-          onClick={() => {
-            if (userHasRated) return;
-            setUserRating(value);
-          }}
-        />
-      ))}
-    </div>
-  );
+  <div className="flex gap-2 text-3xl items-center justify-center">
+    {[1, 2, 3, 4, 5].map((value) => (
+      <TbStar
+        key={value}
+        className={`transition ${
+          (userRating ?? 0) >= value
+            ? "text-yellow-400 fill-yellow-400"
+            : "text-slate-500"
+        } cursor-pointer hover:text-yellow-300`}
+        onClick={() => {
+          setUserRating(value);
+        }}
+      />
+    ))}
+  </div>
+);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -232,7 +259,17 @@ export default function MovieDetailsPage() {
               )}
 
               {userHasRated && (
-                <p className="text-yellow-400 text-center mt-2">Já classificaste este filme: {userRating} ★</p>
+                <>
+                  <p className="text-yellow-400 text-center mt-2">Já classificaste este filme: {dbRating} ★</p>
+
+                  <Button
+                    onClick={handleRatingUpdate}
+                    disabled={ratingSubmitting || userRating === null}
+                    className="w-full mt-3 bg-yellow-500 hover:bg-yellow-600 text-black"
+                  >
+                    {ratingSubmitting ? "Updating..." : "Update Rating"}
+                  </Button>
+                </>
               )}
             </div>
           </div>
