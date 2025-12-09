@@ -519,3 +519,51 @@ export async function getHistory(page = 0, size = 1000): Promise<Movie[]> {
     throw err;
   }
 }
+
+export async function checkRating(movieId: number): Promise<number | null> {
+  const response = await fetch(`${API_URL}/rating/${movieId}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    handleUnauthorized(response);
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Erro ao obter rating");
+  }
+
+  const data = await response.json();
+
+  if (data.success === true && typeof data.rating === "number") {
+    return data.rating;
+  }
+
+  return null;
+}
+
+export async function updateRating(movieId: number, rating: number) {
+  console.log(`Atualizando rating do filme ${movieId} para ${rating}`);
+  const response = await fetch(
+    `${API_URL}/rating/${movieId}?rating=${rating}`,
+    {
+      method: "PUT",
+      headers: getAuthHeaders(),
+    }
+  );
+
+  if (response.status === 401) {
+    handleUnauthorized(response);
+    return null;
+  }
+
+  const text = await response.text();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { success: false, message: text };
+  }
+}
