@@ -10,6 +10,7 @@ import pt.uc.movierecommendation.movierecommendationsystem.Model.Genre;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Movie;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Ratings;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.WatchListItem;
+import pt.uc.movierecommendation.movierecommendationsystem.Repository.HistoryItemRepository;
 import pt.uc.movierecommendation.movierecommendationsystem.Repository.MovieRepository;
 import pt.uc.movierecommendation.movierecommendationsystem.Repository.RatingsRepository;
 import pt.uc.movierecommendation.movierecommendationsystem.Repository.WatchListItemRepository;
@@ -29,6 +30,7 @@ class MovieServiceTest {
     private RatingsRepository ratingsRepository;
     private WatchListItemRepository watchListItemRepository;
     private MovieRepository movieRepository;
+    private HistoryItemRepository historyItemRepository;
     private MovieService movieService;
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -38,7 +40,8 @@ class MovieServiceTest {
         movieRepository = mock(MovieRepository.class);
         ratingsRepository = mock(RatingsRepository.class);
         watchListItemRepository = mock(WatchListItemRepository.class);
-        movieService = Mockito.spy(new MovieService(movieRepository, ratingsRepository, watchListItemRepository));
+        historyItemRepository = mock(HistoryItemRepository.class);
+        movieService = Mockito.spy(new MovieService(movieRepository, ratingsRepository, watchListItemRepository, historyItemRepository));
 
         try {
             // Injecting a fake API key
@@ -54,7 +57,7 @@ class MovieServiceTest {
     void getRecommendedGenresIds_shouldReturnEmpty_whenNoData() throws InterruptedException {
         Long userId = 1L;
         
-        when(ratingsRepository.findTop20ByUser_IdAndRatingLessThanEqualOrderByRatingAsc(eq(userId), anyInt()))
+        when(ratingsRepository.findTop20ByUser_IdAndRatingGreaterThanEqualOrderByRatingDesc(eq(userId), anyInt()))
                 .thenReturn(new ArrayList<>());
         when(watchListItemRepository.findByUser_Id(userId))
                 .thenReturn(new ArrayList<>());
@@ -145,7 +148,7 @@ class MovieServiceTest {
         movie2.setGenres(null);
         rating2.setMovie(movie2);
 
-        when(ratingsRepository.findTop20ByUser_IdAndRatingLessThanEqualOrderByRatingAsc(eq(userId), anyInt()))
+        when(ratingsRepository.findTop20ByUser_IdAndRatingGreaterThanEqualOrderByRatingDesc(eq(userId), anyInt()))
                 .thenReturn(List.of(rating1, rating2));
         when(watchListItemRepository.findByUser_Id(userId)).thenReturn(new ArrayList<>());
 
