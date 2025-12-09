@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import pt.uc.movierecommendation.movierecommendationsystem.Service.AuthService;
 import pt.uc.movierecommendation.movierecommendationsystem.Service.MovieService;
@@ -23,6 +25,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -113,9 +116,8 @@ public class MovieController {
 
     @GetMapping("/recommended")
     public ResponseEntity<?> getRecommendedMovies(
-            @RequestHeader(name = "Authorization", required = false) String authorization,
-            @RequestParam(name = "page", defaultValue = "1") int page) throws IOException, InterruptedException
-    {
+        @RequestHeader(name = "Authorization", required = false) String authorization
+    ) throws IOException, InterruptedException {
         // Validating Authorization header
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header");
@@ -123,9 +125,6 @@ public class MovieController {
         String token = authorization.substring("Bearer ".length());
         Long userId = authService.getUserIdFromToken(token);
         if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-
-        // Validating page parameter
-        if (page < 1) page = 1;
 
         try {
             // Getting recommended genre IDs for the user
@@ -139,23 +138,73 @@ public class MovieController {
                         .body(pop);
             }
 
+            // Getting IDs of movies the user has already interacted with to exclude them
+            Set<Long> excludedIds = movieService.getExcludedMovieIds(userId);
+
+            ObjectMapper mapper = new ObjectMapper();
+            ArrayNode accumulatedResults = mapper.createArrayNode();
+
+            int currentTmdbPage = 1;
+            int maxPagesToCheck = 30; // Safety limit to prevent infinite loops
+            int pagesChecked = 0;
+            int targetCount = 20;
+
             // Calling TMDb API to get the recommendations
             String base = "https://api.themoviedb.org/3/discover/movie";
             String withGenres = genreIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
-            String url = base +
+            HttpClient client = HttpClient.newHttpClient();
+
+            // Looping until have enough movies or checked too many pages
+            while (accumulatedResults.size() < targetCount && pagesChecked < maxPagesToCheck) {
+            
+                String url = base +
                     "?with_genres=" + withGenres +
                     "&sort_by=popularity.desc" +
-                    "&page=" + page +
+                    "&page=" + currentTmdbPage +
                     "&api_key=" + apiKey;
 
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            return ResponseEntity
-                    .status(response.statusCode())
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .body(response.body());
+                if (response.statusCode() == 200) {
+                    JsonNode root = mapper.readTree(response.body());
+                    JsonNode results = root.path("results");
+                    int totalPages = root.path("total_pages").asInt();
+
+                    if (results.isArray()) {
+                        for (JsonNode node : results) {
+                            long movieId = node.path("id").asLong();
+
+                            // Only add if not watched/to-watch
+                            if (!excludedIds.contains(movieId)) {
+                                accumulatedResults.add(node);
+                                if (accumulatedResults.size() >= targetCount) break;
+                            }
+                        }
+                    }
+
+                    // Stop if reached the end of available pages
+                    if (currentTmdbPage >= totalPages) break;
+                }
+                else {
+                    // API error
+                    return ResponseEntity
+                            .status(HttpStatus.BAD_GATEWAY)
+                            .body("Recommendation error");
+                }
+
+                currentTmdbPage++;
+                pagesChecked++;
+            }
+
+            // Construct final JSON response
+            ObjectNode finalResponse = mapper.createObjectNode();
+            finalResponse.set("results", accumulatedResults);
+            finalResponse.put("total_results", accumulatedResults.size());
+
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(finalResponse.toString());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Recommendation error");
         }
