@@ -18,7 +18,8 @@ public interface RatingsRepository extends JpaRepository<Ratings, Long> {
     List<Ratings> findTop20ByUser_IdAndRatingGreaterThanEqualOrderByRating(Long userId, Integer rateingThreshold);
     //worst rated
     List<Ratings> findTop20ByUser_IdAndRatingLessThanEqualOrderByRatingAsc(Long userId, Integer rateingThreshold);
-
+    //best rated desc
+    List<Ratings> findTop20ByUser_IdAndRatingGreaterThanEqualOrderByRatingDesc(Long userId, Integer rateingThreshold);
 
     @Query(
         value = "SELECT * FROM ratings WHERE user_id = :userId ORDER BY RANDOM() LIMIT 10",
