@@ -1,9 +1,8 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getMovieById, Movie, addToWatchlist, removeFromWatchlist, isMovieInWatchlist, addToHistory, removeFromHistory, isMovieInHistory } from "@/Services/API";
+import { getMovieById, Movie, addToWatchlist, removeFromWatchlist, isMovieInWatchlist, addToHistory, removeFromHistory, isMovieInHistory, checkRating, updateRating} from "@/Services/API";
 import { TbStar, TbLibraryPlus, TbLibraryMinus, TbCalendar, TbClock } from "react-icons/tb";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +19,10 @@ export default function MovieDetailsPage() {
   const [watchedLoading, setWatchedLoading] = useState(false);
   const [watchlist, setWatchlist] = useState(false);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [userRating, setUserRating] = useState<number | null>(null); // 1..5 or null
+  const [userHasRated, setUserHasRated] = useState<boolean>(false);
+  const [ratingSubmitting, setRatingSubmitting] = useState<boolean>(false);
+  const [dbRating, setDbRating] = useState<number | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -35,6 +38,17 @@ export default function MovieDetailsPage() {
 
         const inHistory = await isMovieInHistory(Number(id));
         setWatched(inHistory);
+
+        try {
+          const rating = await checkRating(Number(id));
+          if (rating !== null && rating !== undefined) {
+            setUserRating(rating);
+            setDbRating(rating);
+            setUserHasRated(true);
+          }
+        } catch (err) {
+          console.debug("checkRating falhou (pode ser que o utilizador não esteja logado):", err);
+        }
       } catch (err) {
         console.error("Erro ao buscar filme:", err);
       } finally {
@@ -59,6 +73,66 @@ export default function MovieDetailsPage() {
 
   const director = movie.credits?.crew?.find(person => person.job === "Director");
   const cast = movie.credits?.cast?.slice(0, 5) || [];
+
+  const handleRatingSubmit = async () => {
+    if (!movie) return;
+    if (userHasRated) return;
+    if (userRating === null) return;
+
+    try {
+      setRatingSubmitting(true);
+      const res = await updateRating(movie.id, userRating);
+      setDbRating(userRating);
+      if (res && (res.success === true || res.message)) {
+        setUserHasRated(true);
+      } else {
+        setUserHasRated(true);
+      }
+    } catch (err) {
+      console.error('Erro ao enviar rating:', err);
+    } finally {
+
+      setRatingSubmitting(false);
+    }
+  };
+
+  const handleRatingUpdate = async () => {
+    if (!movie) return;
+    if (userRating === null) return;
+
+    try {
+      setRatingSubmitting(true);
+      const res = await updateRating(movie.id, userRating);
+      const refreshedRating = await checkRating(movie.id);
+      if (refreshedRating !== null && refreshedRating !== undefined) {
+        setDbRating(refreshedRating); // atualiza o valor estático mostrado no texto
+      }
+      console.log("Update Rating Result:", res);
+    } catch (err) {
+      console.error("Erro ao atualizar rating:", err);
+    } finally {
+      setRatingSubmitting(false);
+    }
+  };
+
+
+  const StarWidget = () => (
+  <div className="flex gap-2 text-3xl items-center justify-center">
+    {[1, 2, 3, 4, 5].map((value) => (
+      <TbStar
+        key={value}
+        className={`transition ${
+          (userRating ?? 0) >= value
+            ? "text-yellow-400 fill-yellow-400"
+            : "text-slate-500"
+        } cursor-pointer hover:text-yellow-300`}
+        onClick={() => {
+          setUserRating(value);
+        }}
+      />
+    ))}
+  </div>
+);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -167,6 +241,36 @@ export default function MovieDetailsPage() {
                 )}
                 <span className="truncate">{watchlist ? "List" : "List"}</span>
               </Button>
+            </div>
+
+            <div className="mt-4 bg-slate-800 p-4 rounded-xl shadow-lg">
+              <h3 className="text-lg font-semibold mb-2">Your Rating</h3>
+
+              <StarWidget />
+
+              {!userHasRated && (
+                <Button
+                  onClick={handleRatingSubmit}
+                  disabled={ratingSubmitting || userRating === null}
+                  className="w-full mt-3 bg-yellow-500 hover:bg-yellow-600 text-black"
+                >
+                  {ratingSubmitting ? "Saving..." : "Submit Rating"}
+                </Button>
+              )}
+
+              {userHasRated && (
+                <>
+                  <p className="text-yellow-400 text-center mt-2">You already rated this film: {dbRating} ★</p>
+
+                  <Button
+                    onClick={handleRatingUpdate}
+                    disabled={ratingSubmitting || userRating === null}
+                    className="w-full mt-3 bg-yellow-500 hover:bg-yellow-600 text-black"
+                  >
+                    {ratingSubmitting ? "Updating..." : "Update Rating"}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 

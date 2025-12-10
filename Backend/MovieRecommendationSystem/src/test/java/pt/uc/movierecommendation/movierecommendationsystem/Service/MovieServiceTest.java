@@ -10,10 +10,7 @@ import pt.uc.movierecommendation.movierecommendationsystem.Model.Genre;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Movie;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Ratings;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.WatchListItem;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.HistoryItemRepository;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.MovieRepository;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.RatingsRepository;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.WatchListItemRepository;
+import pt.uc.movierecommendation.movierecommendationsystem.Repository.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,6 +28,8 @@ class MovieServiceTest {
     private WatchListItemRepository watchListItemRepository;
     private MovieRepository movieRepository;
     private HistoryItemRepository historyItemRepository;
+    private GenreRepository genreRepository;
+
     private MovieService movieService;
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -41,7 +40,8 @@ class MovieServiceTest {
         ratingsRepository = mock(RatingsRepository.class);
         watchListItemRepository = mock(WatchListItemRepository.class);
         historyItemRepository = mock(HistoryItemRepository.class);
-        movieService = Mockito.spy(new MovieService(movieRepository, ratingsRepository, watchListItemRepository, historyItemRepository));
+        genreRepository = mock(GenreRepository.class);
+        movieService = Mockito.spy(new MovieService(movieRepository, ratingsRepository, watchListItemRepository, historyItemRepository, genreRepository));
 
         try {
             // Injecting a fake API key
