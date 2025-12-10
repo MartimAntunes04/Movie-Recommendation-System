@@ -1,11 +1,12 @@
-"use client";
+  	"use client";
 import { TbTrendingUp, TbArrowBigUpLine, TbFilter, TbSparkles, TbX } from 'react-icons/tb';
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Movie, popularMovies, topRatedMovies, filteredSearch, FilteredSearchParams } from "@/Services/API";
+import { Movie, popularMovies, topRatedMovies, filteredSearch, FilteredSearchParams, getRecommendedMovies } from "@/Services/API";
 import { MovieCarousel } from "@/components/MovieCarousel";
 import { useRouter } from "next/navigation";
 import { MovieCarouselSkeleton } from "@/components/MovieCarouselSkeleton";
+import { useAuth } from "@/contexts/AuthContext";
 
 // shadcn components
 import { Button } from "@/components/ui/button";
@@ -295,8 +296,10 @@ function DiscoverPanel({
 
 export default function Home() {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [moviesPop, setMoviesPop] = useState<Movie[]>([]);
   const [moviesTop, setMoviesTop] = useState<Movie[]>([]);
+  const [moviesRecommended, setMoviesRecommended] = useState<Movie[]>([]);
   const [moviesFiltered, setMoviesFiltered] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false);
@@ -310,6 +313,11 @@ export default function Home() {
         setMoviesPop(pop.results || []);
         const top = await topRatedMovies();
         setMoviesTop(top.results || []);
+        
+        if (isAuthenticated) {
+          const recommended = await getRecommendedMovies();
+          setMoviesRecommended(recommended.results || []);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -318,7 +326,7 @@ export default function Home() {
     };
 
     fetchMovies();
-  }, []);
+  }, [isAuthenticated]);
 
   const handleMovieClick = (movie: Movie) => {
     router.push(`/movies/${movie.id}`);
@@ -395,6 +403,17 @@ export default function Home() {
             icon={TbSparkles}
             onMovieClick={handleMovieClick}
             seeMoreUrl={buildDiscoverUrl(activeFilters)}
+          />
+        )}
+
+        {/* Recommended Movies Section */}
+        {isAuthenticated && (
+          <MovieSection
+            title="Recommended for You"
+            movies={moviesRecommended}
+            loading={loading}
+            icon={TbSparkles}
+            onMovieClick={handleMovieClick}
           />
         )}
 

@@ -245,6 +245,34 @@ export async function filteredSearch(
   }
 }
 
+export async function getRecommendedMovies(): Promise<{ results: Movie[] }> {
+  try {
+    const response = await fetch(
+      `${API_URL}/movies/recommended`,
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      // If unauthorized, we might want to just return empty results or throw
+      if (response.status === 401) {
+        return { results: [] };
+      }
+      handleUnauthorized(response);
+      throw new Error(`Erro ao buscar recomendações: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Erro na requisição getRecommendedMovies:", error);
+    // Return empty results on error to not break the page
+    return { results: [] };
+  }
+}
+
 export function logout() {
   clearToken();
 }
