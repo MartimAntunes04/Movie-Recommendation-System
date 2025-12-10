@@ -260,7 +260,7 @@ export default function MovieDetailsPage() {
 
               {userHasRated && (
                 <>
-                  <p className="text-yellow-400 text-center mt-2">Já classificaste este filme: {dbRating} ★</p>
+                  <p className="text-yellow-400 text-center mt-2">You already rated this film: {dbRating} ★</p>
 
                   <Button
                     onClick={handleRatingUpdate}

@@ -149,14 +149,15 @@ public class MovieController {
             int pagesChecked = 0;
             int targetCount = 20;
 
+
             // Calling TMDb API to get the recommendations
             String base = "https://api.themoviedb.org/3/discover/movie";
-            String withGenres = genreIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
+            String withGenres = genreIds.stream().map(String::valueOf).collect(Collectors.joining(","));
             HttpClient client = HttpClient.newHttpClient();
 
             // Looping until have enough movies or checked too many pages
             while (accumulatedResults.size() < targetCount && pagesChecked < maxPagesToCheck) {
-            
+
                 String url = base +
                     "?with_genres=" + withGenres +
                     "&sort_by=popularity.desc" +
@@ -166,28 +167,22 @@ public class MovieController {
                 HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+
                 if (response.statusCode() == 200) {
                     JsonNode root = mapper.readTree(response.body());
                     JsonNode results = root.path("results");
-                    int totalPages = root.path("total_pages").asInt();
 
                     if (results.isArray()) {
                         for (JsonNode node : results) {
                             long movieId = node.path("id").asLong();
-
-                            // Only add if not watched/to-watch
                             if (!excludedIds.contains(movieId)) {
                                 accumulatedResults.add(node);
                                 if (accumulatedResults.size() >= targetCount) break;
                             }
                         }
                     }
-
-                    // Stop if reached the end of available pages
-                    if (currentTmdbPage >= totalPages) break;
                 }
                 else {
-                    // API error
                     return ResponseEntity
                             .status(HttpStatus.BAD_GATEWAY)
                             .body("Recommendation error");

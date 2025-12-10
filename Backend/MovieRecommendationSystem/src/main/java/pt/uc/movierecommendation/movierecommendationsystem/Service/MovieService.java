@@ -20,10 +20,7 @@ import pt.uc.movierecommendation.movierecommendationsystem.Model.HistoryItem;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Movie;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.Ratings;
 import pt.uc.movierecommendation.movierecommendationsystem.Model.WatchListItem;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.HistoryItemRepository;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.MovieRepository;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.RatingsRepository;
-import pt.uc.movierecommendation.movierecommendationsystem.Repository.WatchListItemRepository;
+import pt.uc.movierecommendation.movierecommendationsystem.Repository.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -44,14 +41,16 @@ public class MovieService {
     private final RatingsRepository ratingsRepository;
     private final WatchListItemRepository watchListItemRepository;
     private final HistoryItemRepository historyItemRepository;
+    private final GenreRepository genreRepository;
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public MovieService(MovieRepository movieRepository, RatingsRepository ratingsRepository, WatchListItemRepository watchListItemRepository, HistoryItemRepository historyItemRepository) {
+    public MovieService(MovieRepository movieRepository, RatingsRepository ratingsRepository, WatchListItemRepository watchListItemRepository, HistoryItemRepository historyItemRepository , GenreRepository genreRepository) {
         this.movieRepository = movieRepository;
         this.ratingsRepository = ratingsRepository;
         this.watchListItemRepository = watchListItemRepository;
         this.historyItemRepository = historyItemRepository;
+        this.genreRepository = genreRepository;
     }
 
     public List<Integer> getRecommendedGenresIds(Long userId) throws InterruptedException {
@@ -61,7 +60,7 @@ public class MovieService {
         }
 
         // Getting top rated movies for the user
-        List<Ratings> topRated = ratingsRepository.findTop20ByUser_IdAndRatingGreaterThanEqualOrderByRatingDesc(userId, 7);
+        List<Ratings> topRated = ratingsRepository.findTop20ByUser_IdAndRatingGreaterThanEqualOrderByRatingDesc(userId, 4);
         List<Genre> likedGenres = new ArrayList<>();
         for (Ratings item : topRated) {
             Movie movie = item.getMovie();
@@ -173,6 +172,29 @@ public class MovieService {
 
         // store poster path from TMDb
         movie.setPosterPath(details.path("poster_path").asText(null));
+
+
+        //Associar generos
+        Set<Genre> movieGenres = new HashSet<>();
+        if (details.has("genres") && details.get("genres").isArray()) {
+            for (JsonNode g : details.get("genres")) {
+                Long genreId = g.path("id").asLong();
+                String genreName = g.path("name").asText();
+
+                // Buscar ou criar o género na tabela genres
+                Genre genre = genreRepository.findById(genreId)
+                        .orElseGet(() -> {
+                            Genre newGenre = new Genre();
+                            newGenre.setId(genreId);
+                            newGenre.setName(genreName);
+                            return genreRepository.save(newGenre);
+                        });
+
+                movieGenres.add(genre);
+            }
+        }
+
+        movie.setGenres(movieGenres);
 
         return movieRepository.save(movie);
     }
