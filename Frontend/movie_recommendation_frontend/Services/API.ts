@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 const TOKEN_KEY = 'auth_token';
 
 // Helper para obter o token - VERSÃO CORRIGIDA
@@ -87,6 +87,7 @@ function handleUnauthorized(response: Response) {
 }
 
 export async function login(email: string, password: string) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
   try {
     const response = await fetch(`${API_URL}/login`, {
       method: "POST",
@@ -119,6 +120,7 @@ export async function login(email: string, password: string) {
 }
 
 export async function register(email: string, password: string,username:string,firstName:string,lastName:string){
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
   try{
     const response = await fetch(`${API_URL}/signup`,{
       method:"POST",
@@ -144,6 +146,7 @@ export async function searchMovies(
   query: string
 ): Promise<{ results: Movie[] }> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(
       `${API_URL}/movies/search?query=${encodeURIComponent(query)}`,
       {
@@ -167,6 +170,7 @@ export async function searchMovies(
 
 export async function popularMovies(): Promise<{ results: Movie[] }> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(
       `${API_URL}/movies/popular`,
       {
@@ -191,6 +195,7 @@ export async function popularMovies(): Promise<{ results: Movie[] }> {
 
 export async function topRatedMovies(): Promise<{ results: Movie[] }> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(
       `${API_URL}/movies/top`,
       {
@@ -216,6 +221,7 @@ export async function filteredSearch(
   params: FilteredSearchParams
 ): Promise<{ results: Movie[] }> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const queryParams = new URLSearchParams();
     
     if (params.ratingMin !== undefined) queryParams.append('ratingMin', params.ratingMin.toString());
@@ -247,6 +253,7 @@ export async function filteredSearch(
 
 export async function getRecommendedMovies(): Promise<{ results: Movie[] }> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(
       `${API_URL}/movies/recommended`,
       {
@@ -285,6 +292,7 @@ export async function updateProfile(
   password?: string
 ) {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/profile/update`, {
       method: "POST",
       headers: {
@@ -316,6 +324,7 @@ export async function updateProfile(
 
 export async function getMovieById(id: string): Promise<Movie> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/movies/${encodeURIComponent(id)}`, {
       method: 'GET',
       headers: getAuthHeaders(),
@@ -337,6 +346,7 @@ export async function getMovieById(id: string): Promise<Movie> {
 
 export async function getWatchlist(page = 0, size = 1000): Promise<Movie[]> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/watchlist?page=${page}&size=${size}`, {
       method: 'GET',
       headers: getAuthHeaders(),
@@ -377,6 +387,7 @@ export async function getWatchlist(page = 0, size = 1000): Promise<Movie[]> {
 
 export async function addToWatchlist(movieId: number) {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/watchlist/${encodeURIComponent(movieId)}`, {
       method: 'POST',
       headers: getAuthHeaders(),
@@ -397,6 +408,7 @@ export async function addToWatchlist(movieId: number) {
 
 export async function removeFromWatchlist(movieId: number) {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/watchlist/${encodeURIComponent(movieId)}`, {
       method: 'DELETE',
       headers: getAuthHeaders(),
@@ -417,6 +429,7 @@ export async function removeFromWatchlist(movieId: number) {
 
 export async function isMovieInWatchlist(movieId: number): Promise<boolean> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/watchlist/checkWatchlist/${movieId}`, {
       method: 'GET',
       headers: getAuthHeaders(),
@@ -440,6 +453,7 @@ export async function isMovieInWatchlist(movieId: number): Promise<boolean> {
 
 export async function addToHistory(movieId: number) {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/history/${encodeURIComponent(movieId)}`, {
       method: 'POST',
       headers: getAuthHeaders(),
@@ -463,6 +477,7 @@ export async function addToHistory(movieId: number) {
 
 export async function removeFromHistory(movieId: number) {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/history/${encodeURIComponent(movieId)}`, {
       method: 'DELETE',
       headers: getAuthHeaders(),
@@ -483,6 +498,7 @@ export async function removeFromHistory(movieId: number) {
 
 export async function isMovieInHistory(movieId: number): Promise<boolean> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/history/checkHistory/${movieId}`, {
       method: 'GET',
       headers: getAuthHeaders(),
@@ -504,6 +520,7 @@ export async function isMovieInHistory(movieId: number): Promise<boolean> {
 
 export async function getHistory(page = 0, size = 1000): Promise<Movie[]> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${API_URL}/history?page=${page}&size=${size}`, {
       method: 'GET',
       headers: getAuthHeaders(),
@@ -549,6 +566,7 @@ export async function getHistory(page = 0, size = 1000): Promise<Movie[]> {
 }
 
 export async function checkRating(movieId: number): Promise<number | null> {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
   const response = await fetch(`${API_URL}/rating/${movieId}`, {
     method: "GET",
     headers: getAuthHeaders(),
@@ -573,6 +591,7 @@ export async function checkRating(movieId: number): Promise<number | null> {
 }
 
 export async function updateRating(movieId: number, rating: number) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
   console.log(`Atualizando rating do filme ${movieId} para ${rating}`);
   const response = await fetch(
     `${API_URL}/rating/${movieId}?rating=${rating}`,
