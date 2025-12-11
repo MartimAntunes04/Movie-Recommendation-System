@@ -13,7 +13,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000", "https://frontend-ads-66p8.onrender.com")
+                        .allowedOrigins("http://localhost:3000", "https://frontend-latest-vutz.onrender.com")
                         .allowedMethods("*");
             }
         };

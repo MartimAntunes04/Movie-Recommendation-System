@@ -50,7 +50,7 @@ public class SecurityConfig {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(java.util.List.of(
                 "http://localhost:3000",
-                "https://frontend-ads-66p8.onrender.com"
+                "https://frontend-latest-vutz.onrender.com"
         ));
         cfg.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(java.util.List.of("*"));
