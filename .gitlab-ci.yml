@@ -151,8 +151,8 @@ deploy:
    
    # Use images from registry
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - docker pull "$CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA" || true
-    - docker pull "$CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHORT_SHA" || true
+    - docker pull "$CI_REGISTRY_IMAGE/backend:latest" 
+    - docker pull "$CI_REGISTRY_IMAGE/frontend:latest"
   
   # Fallback to compose build (dev)
     - docker compose up -d --build
