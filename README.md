@@ -112,13 +112,13 @@ My List (Watchlist)
 
 ### User Storie 2
 
-![User Storie 2](Mockups/US2/Sign Up.png)
+![User Storie 2](Mockups/US2/SignUp.png)
 
 ### User Storie 3
 
 ![User Storie 3](Mockups/US3/Profile.png)
 
-![User Storie 3](Mockups/US3/Edit Profile.png)
+![User Storie 3](Mockups/US3/EditProfile.png)
 
 ### User Storie 4
 
