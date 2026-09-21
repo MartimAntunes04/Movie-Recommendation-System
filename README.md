@@ -1,93 +1,188 @@
-# TP_ADS 1
+# TP ADS
+
+## Contents
+
+- [Team](#team)
+- [Vision and Scope](#vision-and-scope)
+- [Requirements](#requirements)
+    - [Use case diagram](#use-case-diagram)
+    - [Mockups](#mockups)
+    - [User Stories](#user-stories)
 
 
+## Team
+ 
+- Martim Antunes - 2025191528 - uc2025191528@student.uc.pt
+- Bernardo Pedro - 2021231014 - uc2021231014@student.uc.pt
+- Daniel Antunes - 2025192233 - daniel.malho.antunes@gmail.com
+- Franscisco Tavares - 2020211848 - franciscomcmt@gmail.com
+- Gonçalo Gaio - 2022224905 - goncalogaio12@gmail.com
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Setup
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+docker compose up --build 
 
-## Add your files
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-* [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/tp_ads_1/tp_ads-1.git
-git branch -M main
-git push -uf origin main
-```
+## Vision and Scope
 
-## Integrate with your tools
+#### Problem Statement
 
-* [Set up project integrations](https://gitlab.com/tp_ads_1/tp_ads-1/-/settings/integrations)
+##### Project background
 
-## Collaborate with your team
+Modern streaming platforms and online movie databases offer massive collections of films, but users often struggle to discover content that matches their personal preferences. Without intelligent recommendation systems, users spend excessive time browsing through irrelevant titles. This project aims to create a movie recommendation system that helps users quickly find films aligned with their interests by combining traditional development methods with AI-assisted workflows.
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+##### Users
 
-## Test and Deploy
+- General users interested in discovering and organizing movies to watch;
+- Movie enthusiasts who enjoy rating and reviewing films;
+- Casual viewers who want quick, personalized recommendations;
 
-Use the built-in continuous integration in GitLab.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+---
 
-***
+##### Vision statement
 
-# Editing this README
+The goal of this project is to build an intuitive and intelligent Movie Recommendation System that allows users to easily discover new movies, rate and receive personalized suggestions.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+##### List of features
 
-## Suggestions for a good README
+User Registration and Authentication:
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- Create and manage user accounts (sign up, login, logout, change password).
 
-## Name
-Choose a self-explaining name for your project.
+Profile Management;
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- View and edit user information.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Movie Catalog Browsing:
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- Display paginated lists of movies with key details.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Search and Filter:
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+- Search by title, director, or genre; filter by rating or year.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Movie Details View:
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- Show detailed information about selected movies.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+User Ratings:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+- Allow users to rate movies (1–5 stars) and update or delete ratings.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+Recommendation Engine:
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- Suggest movies based on user history and preferences.
 
-## License
-For open source projects, say how it is licensed.
+- Show “Popular Movies” based on overall ratings.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Watch/Rating History:
+
+- Keep track of movies rated or watched by the user.
+
+My List (Watchlist)
+
+- Allow users to save movies to a personal watchlist for watching later.
+
+- Display saved movies in a dedicated “My List” page.
+
+- Enable adding/removing movies via a heart icon on movie details.
+
+---
+
+## Requirements
+
+### Use Case Diagram
+
+![Use case diagram](diagrams_models/UseCaseDiagram.png)
+
+
+---
+
+### Mockups
+
+### User Storie 1
+
+![User Storie 1](Mockups/US1/Login.png)
+
+### User Storie 2
+
+![User Storie 2](Mockups/US2/Sign Up.png)
+
+### User Storie 3
+
+![User Storie 3](Mockups/US3/Profile.png)
+
+![User Storie 3](Mockups/US3/Edit Profile.png)
+
+### User Storie 4
+
+![User Storie 4](Mockups/US4/Browse Movie Catalog.png)
+
+### User Storie 5
+
+![User Storie 5](Mockups/US5/Movie Details Page.png)
+
+### User Storie 6
+
+![User Storie 6](Mockups/US6/Search Movie.png)
+
+### User Storie 7
+
+![User Storie 7](Mockups/US7/Filter Movie.png)
+
+### User Storie 8
+
+![User Storie 8](Mockups/US8/Rate Movie.png)
+
+### User Storie 9
+
+![User Storie 9](Mockups/US9/Personalized Recommendations.png)
+
+### User Storie 10
+
+![User Storie 10](Mockups/US10/Popular Movies.png)
+
+### User Storie 11
+
+![User Storie 11](Mockups/US11/History.png)
+
+### User Storie 12
+
+![User Storie 12](Mockups/US12/My List.png)
+
+---
+
+### User Stories
+
+- User story 1 (#6)
+
+- User story 2 (#7)
+
+- User story 3 (#8)
+
+- User story 4 (#9)
+
+- User story 5 (#10)
+
+- User story 6 (#11)
+
+- User story 7 (#12)
+
+- User story 8 (#13)
+
+- User story 9 (#14)
+
+- User story 10 (#15)
+
+- User story 11 (#16)
+
+- User story 12 (#17)
+
+---
+
