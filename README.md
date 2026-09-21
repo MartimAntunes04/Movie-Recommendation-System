@@ -122,31 +122,31 @@ My List (Watchlist)
 
 ### User Storie 4
 
-![User Storie 4](Mockups/US4/Browse Movie Catalog.png)
+![User Storie 4](Mockups/US4/BrowseMovieCatalog.png)
 
 ### User Storie 5
 
-![User Storie 5](Mockups/US5/Movie Details Page.png)
+![User Storie 5](Mockups/US5/MovieDetailsPage.png)
 
 ### User Storie 6
 
-![User Storie 6](Mockups/US6/Search Movie.png)
+![User Storie 6](Mockups/US6/SearchMovie.png)
 
 ### User Storie 7
 
-![User Storie 7](Mockups/US7/Filter Movie.png)
+![User Storie 7](Mockups/US7/FilterMovie.png)
 
 ### User Storie 8
 
-![User Storie 8](Mockups/US8/Rate Movie.png)
+![User Storie 8](Mockups/US8/RateMovie.png)
 
 ### User Storie 9
 
-![User Storie 9](Mockups/US9/Personalized Recommendations.png)
+![User Storie 9](Mockups/US9/PersonalizedRecommendations.png)
 
 ### User Storie 10
 
-![User Storie 10](Mockups/US10/Popular Movies.png)
+![User Storie 10](Mockups/US10/PopularMovies.png)
 
 ### User Storie 11
 
@@ -154,7 +154,7 @@ My List (Watchlist)
 
 ### User Storie 12
 
-![User Storie 12](Mockups/US12/My List.png)
+![User Storie 12](Mockups/US12/MyList.png)
 
 ---
 
